@@ -9,3 +9,4 @@ An implementation of a fine-grained reactive system for Swift, similar to that o
 
 -   [Why Thread Local? Technical question about reactivity implementation](https://github.com/leptos-rs/leptos/discussions/2807)
 -   [This conversation](https://universeodon.com/@markmalstrom/112932995815099210) between [@markmalstrom@universeodon.com](https://universeodon.com/@markmalstrom) and [@mattiem@mastodon.social](https://mastodon.social/@mattiem)
+-   [This gist](https://gist.github.com/markmals/e880043a5f59436b2cc581f9692e6fd6) with an exploration of a minimal auto-tracking reactivity API in Swift and the resulting conversation between Matt and myself in the comments
