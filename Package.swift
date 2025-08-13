@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.1
 
 import PackageDescription
 
@@ -6,15 +6,24 @@ let package = Package(
     name: "Reactivity",
     platforms: [.macOS(.v15), .iOS(.v18)],
     products: [
-        .library(name: "SynchronizationExtras", targets: ["SynchronizationExtras"]),
-        
-        .library(name: "ReactiveGraph", targets: ["ReactiveGraph"]),
+        .library(name: "ReactiveGraph", targets: ["ReactiveGraph"])
+    ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.5")
     ],
     targets: [
-        .target(name: "SynchronizationExtras"),
-        .testTarget(name: "SynchronizationExtrasTests",dependencies: ["SynchronizationExtras"]),
-
-        .target(name: "ReactiveGraph", dependencies: ["SynchronizationExtras"]),
-        .testTarget(name: "ReactiveGraphTests",dependencies: ["ReactiveGraph"]),
+        .target(
+            name: "ReactiveGraph",
+            swiftSettings: [
+                .enableUpcomingFeature("StrictConcurrency")
+            ]
+        ),
+        .testTarget(
+            name: "ReactiveGraphTests",
+            dependencies: ["ReactiveGraph"],
+            swiftSettings: [
+                .enableUpcomingFeature("StrictConcurrency")
+            ]
+        ),
     ]
 )
