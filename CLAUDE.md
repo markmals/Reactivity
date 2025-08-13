@@ -2,6 +2,10 @@
 
 This package contains the API and implemented tests for a fine-grained reactive system for Swift, similar to that of [Solid.js](https://www.solidjs.com).
 
+## Context
+
+Take a look at `./CONTEXT.md` to understand what has been worked on for this project so far and what the current state is.
+
 ## Reactive Algorithm
 
 I want to base the algorithm on that of [Alien Signals](https://github.com/stackblitz/alien-signals). I've included the entire implementation of Alien Signals (originally TypeScript) and other documentation on their algorithm in `./Resources/alien-signals/`. Read these resources thoroughly before implementing the reactive algorithm.
