@@ -25,7 +25,7 @@
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "Package.swift": ".swift-format*, dprint.json*, mise.toml",
-        "readme*": "agents.md, authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying, credits, claude.md, governance.md, history.md, license*, maintainers, readme*, security.md, sponsors*",
+        "readme*": "agents.md, authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying, credits, claude.md, context.md, governance.md, history.md, license*, maintainers, prompt.md, readme*, security.md, sponsors*",
         ".env": "*.env, .env.*, .envrc, env.d.ts"
     },
     "files.exclude": {
