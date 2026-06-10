@@ -1,0 +1,57 @@
+# Code Quality
+
+> **This file is `@included` from the root `CLAUDE.md`.** It loads on every session. Keep it tight — every line costs context.
+
+The code an agent writes in this repo should feel like code a careful human wrote. Not a clever human, not a fast human — a careful one. The goal is readability for the next person (which is usually a future agent reading cold).
+
+## The rules
+
+### Small, focused files
+
+- **One responsibility per file.** A file that handles routing + state + rendering + validation has four files in it. Split them.
+- **A file over ~250 lines is a smell.** Not a hard limit — but stop and ask "what is this file actually about?". Multi-purpose files reliably get worse over time; focused files reliably get better.
+- **Group by responsibility, not by language artifact.** A file (or directory) that holds a primitive together with the bits that make it work is easier to reason about than parallel `Protocols/` / `Extensions/` / `Models/` trees split by Swift-construct kind.
+
+### Functions and methods
+
+- **A function over ~40 lines is a smell.** Same caveats — not a hard cap, but a prompt to reconsider.
+- **Three-or-more-deep nesting is a smell.** Early returns, guard clauses, extracting helpers — all preferable to nested `if`/`for`/`try` pyramids.
+- **One thing per function.** Side effects and pure logic in the same function makes both harder to test.
+
+### Names
+
+- **Name for the reader, not the writer.** `cart` not `c`; `archiveItem` not `handleClick`; `pendingExports` not `pe`.
+- **Avoid acronym-only names** unless the acronym is genuinely industry standard (`URL`, `HTTP`, `DB` are fine; `cnctmgr` is not).
+- **Reserve `data`, `info`, `value`, `result`, `temp` for truly generic contexts.** They're rarely the right name and almost always signal you haven't thought hard enough about what the thing is.
+- **Consistent vocabulary.** If a domain says "item", don't drift to "thing", "record", "entry" elsewhere. Pick one term and use it. If the spec says it differently, surface that — don't paper over the divergence.
+
+### Separation of concerns
+
+- **Pure logic and I/O don't share a function.** Side effects at the edges; pure logic in the middle.
+- **Effects stay at the edges.** The reactive graph is pure; user side effects run only inside the closures callers pass in. Pure graph logic must not reach for I/O, a clock, or ambient global state beyond the defined reactive context.
+- **The core stays plain.** The graph and value types should be testable without spinning up a runtime, a framework, or the outside world.
+
+### Comments
+
+- **Default to no comments.** Well-named code doesn't need them.
+- **Write a comment when the WHY is non-obvious** — a hidden constraint, a workaround for a specific bug, a behavior that would surprise a reader.
+- **Don't comment the WHAT.** `// loop over the items` next to a `for` loop is noise.
+- **Don't reference the current task in comments.** "Added for the export flow" rots fast; it belongs in the commit message.
+
+### Abstraction
+
+- **YAGNI.** Don't build flexibility you don't have a use for. Two similar functions don't need a generic third one; three similar lines don't need a helper. Wait for the third call site, _then_ abstract.
+- **No future-proofing.** Don't add an options object "in case we want to configure it later". Add the parameter when you have a real second caller.
+- **No half-finished features.** Don't ship a function that "almost works but doesn't handle X". Either handle X or don't add the function yet.
+
+### Error handling
+
+- **Validate at boundaries.** External input gets validated and either accepted or rejected with a clear user-observable error. Internal code trusts internal contracts.
+- **No defensive `try`/`catch` everywhere.** Catch where you can do something meaningful (recover, transform, log with context). Don't catch and rethrow.
+- **No silent fallbacks.** If a fallback hides a real bug, you'll find out about it weeks later in production. Surface the failure.
+
+## When the rules conflict
+
+The rules conflict with each other regularly. "Small files" and "feature-scoped grouping" can pull opposite ways. Use judgment: **optimize for the next person to read this code, not for the rule that sounds most universal**.
+
+When you're unsure, ask the user.

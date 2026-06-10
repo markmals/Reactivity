@@ -1,0 +1,14 @@
+# Project-specific commit scopes for scoped-commits.sh (one per line; # = comment).
+#
+# The hook already accepts, automatically: every spec/feature `id:` in specs/ &
+# features/, each features/<slug>, the harness areas (hooks, skills, commands,
+# agents, templates, rules, docs, mise, readme), plus `specs` and `treewide`.
+# List here only the scopes that aren't derivable that way.
+#
+# This is a single Swift library (Sources/ + Tests/), so there are no apps/ or
+# services/ scopes. A behavior change should be scoped to its spec/feature `id:`;
+# the scopes below cover the non-spec parts of the package.
+swift      # library implementation not bound to a single spec id
+package    # Package.swift / Package.resolved / SPM manifest
+tests      # test-only changes not bound to a single spec id
+tooling    # formatter / linter config (dprint, swift-format, .vscode)

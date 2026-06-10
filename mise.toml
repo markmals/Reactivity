@@ -1,2 +1,50 @@
+# mise — tasks and tools for the Reactivity Swift package.
+#
+# Task NAMES are a contract the harness dispatches to:
+#   fmt   — format-on-edit.sh passes the touched file; bare run formats everything
+#   lint  — stop-lint.sh runs this before the agent stops; must exit non-zero on lint failure
+#   test  — /sdd-verify and the Stop discipline run the behavioral suite here
+#   build — compile the library
+# `fmt` must accept optional file paths (format just those) and format the whole
+# package when given none.
+
 [tools]
 dprint = "latest"
+# swift-format ships with the Swift 6 toolchain as the `swift format` subcommand
+# (used below). No separate install needed.
+
+[tasks.build]
+description = "Build the library"
+run = "swift build"
+
+[tasks.test]
+alias = "t"
+description = "Run the spec-bound Swift Testing suite"
+run = "swift test"
+
+[tasks.fmt]
+description = "Format sources (swift-format for Swift, dprint for md/json/toml). Pass paths to format just those."
+usage = 'arg "[paths]" var=#true'
+run = '''
+set -- $usage_paths
+if [ "$#" -eq 0 ]; then
+  swift format format --in-place --configuration .swift-format.json --recursive Sources Tests
+  dprint fmt
+  exit 0
+fi
+for f in "$@"; do
+  case "$f" in
+    *.swift) swift format format --in-place --configuration .swift-format.json "$f" ;;
+    *.md|*.markdown|*.json|*.jsonc|*.toml) dprint fmt "$f" ;;
+  esac
+done
+'''
+
+[tasks.lint]
+alias = "l"
+description = "Lint Swift sources (swift format, strict)"
+run = "swift format lint --strict --configuration .swift-format.json --recursive Sources Tests"
+
+[tasks.docs]
+description = "Build DocC documentation (swift-docc-plugin)"
+run = "swift package generate-documentation"
