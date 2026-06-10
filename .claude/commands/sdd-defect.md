@@ -11,7 +11,7 @@ You are filing a sub-spec defect observation. `$ARGUMENTS` is a free-text descri
 
 Capture an observation while it's fresh, in the structured shape from `.claude/templates/DEFECTS.md`, then return control to the user so they don't lose their current train of thought. This is the **intake** command. Resolution happens later via the `triaging-defects` skill — not now.
 
-Sub-spec defects are observed quirk / polish / quality issues that the spec deliberately doesn't cover. See `specs/CONVENTIONS.md` → "What isSpecs/ spec" for the boundary.
+Sub-spec defects are observed quirk / polish / quality issues that the spec deliberately doesn't cover. See `Specs/CONVENTIONS.md` → "What is NOT a spec" for the boundary.
 
 ## Steps
 

@@ -26,7 +26,7 @@ Counter-examples that are _not_ one logical change:
 
 - "Add the memo primitive and also bump the Swift tools version"
 - "Fix the double-recompute bug and reformat the file"
-- "Implement story.reactive.derivation and story.reactive.cleanup"
+- "Implement behavior.reactive.derivation and behavior.reactive.cleanup"
 
 In each case, split. The tools bump is its own commit. The reformat is either its own commit or, ideally, dropped because it has nothing to do with the bug.
 
@@ -49,25 +49,25 @@ The **description**:
 
 The **scope** names what the commit touches. Scoped Commits leaves the vocabulary to the project; in this repo a scope must be one of the **defined** scopes below — and `scoped-commits.sh` enforces that mechanically, rejecting a subject whose scope isn't real (see `.claude/rules/enforcement-hierarchy.md`). The set isn't a hand-maintained list: the hook derives it from the filesystem at commit time — every spec/feature `id:`, each `features/<slug>`, the harness areas — so adding a spec makes that scope usable automatically. Scopes that aren't derivable that way (the library implementation itself, the package manifest) are declared, one per line, in `.claude/commit-scopes`.
 
-| Scope                                                                                          | Use for                                                                                                                   |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| a **spec / feature ID** — `domain.signal`, `story.reactive.derivation`, `error.reactive.cycle` | A change scoped to one spec's behavior. The scope is a **reverse pointer to that `id:`** — same discipline as `// SPEC:`. |
-| `swift`                                                                                        | Library implementation in `Sources/` not bound to a single spec id.                                                       |
-| `tests`                                                                                        | Test-only changes in `Tests/` not bound to a single spec id.                                                              |
-| `package`                                                                                      | `Package.swift` / `Package.resolved` / SPM manifest changes.                                                              |
-| `tooling`                                                                                      | Formatter / linter / editor config (`dprint`, `swift-format`, `.vscode`).                                                 |
-| `specs`                                                                                        | Cross-cutting spec files (`CONVENTIONS`, `ARCHITECTURE`, `STACK`).                                                        |
-| `features/<slug>`                                                                              | Authoring or extending a feature folder (slug must be a real `features/` directory).                                      |
-| a harness area — `hooks`, `skills`, `commands`, `agents`, `templates`, `rules`, `docs`, `mise` | Changes to the repo's own machinery.                                                                                      |
-| `treewide`                                                                                     | A genuinely repo-wide sweep with no single home.                                                                          |
+| Scope                                                                                              | Use for                                                                                                                   |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| a **spec / feature ID** — `domain.signal`, `behavior.reactive.glitch-free`, `error.reactive.cycle` | A change scoped to one spec's behavior. The scope is a **reverse pointer to that `id:`** — same discipline as `// SPEC:`. |
+| `swift`                                                                                            | Library implementation in `Sources/` not bound to a single spec id.                                                       |
+| `tests`                                                                                            | Test-only changes in `Tests/` not bound to a single spec id.                                                              |
+| `package`                                                                                          | `Package.swift` / `Package.resolved` / SPM manifest changes.                                                              |
+| `tooling`                                                                                          | Formatter / linter / editor config (`dprint`, `swift-format`, `.vscode`).                                                 |
+| `specs`                                                                                            | Cross-cutting spec files (`CONVENTIONS`, `ARCHITECTURE`, `STACK`).                                                        |
+| `features/<slug>`                                                                                  | Authoring or extending a feature folder (slug must be a real `Features/` directory; scope token stays lowercase).         |
+| a harness area — `hooks`, `skills`, `commands`, `agents`, `templates`, `rules`, `docs`, `mise`     | Changes to the repo's own machinery.                                                                                      |
+| `treewide`                                                                                         | A genuinely repo-wide sweep with no single home.                                                                          |
 
-The IDs come straight from the `id:` frontmatter in `Specs/` and `features/` — list them with `grep -rhE '^id:' specs features`. Prefer the **broadest scope that still describes it**; fall back to `treewide` for a true global sweep. A ticket number, when there is one, goes in parentheses after the scope: `swift (PROJ-12): …`.
+The IDs come straight from the `id:` frontmatter in `Specs/` and `Features/` — list them with `grep -rhE '^id:' Specs Features`. Prefer the **broadest scope that still describes it**; fall back to `treewide` for a true global sweep. A ticket number, when there is one, goes in parentheses after the scope: `swift (PROJ-12): …`.
 
 Examples:
 
 - `domain.signal: add equality-gated change propagation`
-- `story.reactive.derivation: recompute a memo only when its sources change`
-- `specs: clarify cleanup ordering in story.reactive.cleanup`
+- `behavior.reactive.derivation: recompute a memo only when its sources change`
+- `specs: clarify cleanup ordering in behavior.reactive.cleanup`
 - `swift: split the reactive node graph into storage and traversal`
 - `hooks: dispatch format-on-edit to the root fmt task`
 
@@ -87,7 +87,7 @@ Skip the body for trivial changes.
 
 Optional `Key: value` lines at the end of the message. Use for:
 
-- Cross-references: `Refs: story.item.create`, `Spec: vm.items.list`
+- Cross-references: `Refs: behavior.item.create`, `Spec: domain.signal`
 - A ticket, if you'd rather not put it in the scope: `Ticket: PROJ-12`
 - Breaking changes: `BREAKING CHANGE: <description>`
 - Co-authorship (if collaborating)

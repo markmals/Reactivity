@@ -4,7 +4,7 @@
 
 ## The compact
 
-- **Specs in `Specs/` and `features/<n>/` are the source of truth.** The Swift implementation must satisfy them.
+- **Specs in `Specs/` and `Features/<n>/` are the source of truth.** The Swift implementation must satisfy them.
 - **Reverse pointers are mandatory.** Every type, function, or extension that realizes a spec carries `// SPEC: <id>` in `Sources/`. Tests are tagged with the spec IDs they verify.
 - **Use `// SPEC: <id> (deviates: <reason>)` when the implementation must differ** from the spec. Use `// SPEC: manual` for genuinely internal code with no behavioral contract.
 - **The spec defines what; the test proves it; the implementation satisfies it.** None is the source of truth alone.

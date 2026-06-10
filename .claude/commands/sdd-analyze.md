@@ -14,7 +14,7 @@ Argument forms:
 
 ## Intent
 
-A non-destructive consistency check across all spec files in `features/<NNNN>-<slug>/`. Identify gaps, contradictions, and dangling references **without modifying anything**. Inspired by spec-kit's `/speckit.analyze`.
+A non-destructive consistency check across all spec files in `Features/<NNNN>-<slug>/`. Identify gaps, contradictions, and dangling references **without modifying anything**. Inspired by spec-kit's `/speckit.analyze`.
 
 ## Operating constraint
 
@@ -25,34 +25,32 @@ A non-destructive consistency check across all spec files in `features/<NNNN>-<s
 ### 1. Coverage
 
 - Does `NARRATIVE.md` exist and have substantive content (not just placeholder comments)?
-- Does `stories/` contain at least one story?
-- For every entity referenced in the narrative or stories, does `models/` contain a corresponding `domain.<entity>.md`? (Or is it expected to be cross-cutting in `Specs/models/`?)
-- For every behavior referenced in stories or use-cases, does the feature contain a matching `use-case.<feature>.<name>.md`?
-- For every error mentioned in stories, does `errors/` contain a matching `error.<domain>.<kind>.md`?
+- Does `behaviors/` contain at least one behavior?
+- For every entity referenced in the narrative or behaviors, does `models/` contain a corresponding `domain.<entity>.md`? (Or is it expected to be cross-cutting in `Specs/models/`?)
+- For every error mentioned in behaviors, does `errors/` contain a matching `error.<domain>.<kind>.md`?
 
 ### 2. Reference integrity
 
-- Walk every `depends-on:` entry in every spec file's frontmatter. Does the referenced ID exist somewhere in `features/` or `Specs/`?
+- Walk every `depends-on:` entry in every spec file's frontmatter. Does the referenced ID exist somewhere in `Features/` or `Specs/`?
 - Walk every inline reference (e.g. "see `domain.item`") in spec body text. Does the referenced ID exist?
 
-### 3. Story / scenario consistency
+### 3. Behavior / scenario consistency
 
-- Every story has at least one Acceptance Criteria scenario.
-- Every scenario has a `<!-- id: scenario.<feature>.<capability>.<short-name> -->` marker.
+- Every behavior has at least one Acceptance Criteria scenario.
+- Every scenario has a `<!-- id: behavior.<feature>.<capability>.<short-name> -->` marker.
 - Scenario IDs are unique within the feature.
 - Scenario IDs follow the convention (lowercase, dotted, descriptive).
-- Each story's `**Independent test:**` line is non-empty (or absent and acknowledged).
+- Each behavior's `**Independent test:**` line is non-empty (or absent and acknowledged).
 
 ### 4. Outstanding clarifications
 
 - Count `[NEEDS CLARIFICATION: ...]` markers per file.
 - A feature with any outstanding markers is **not ready for `/sdd-apply`**.
 
-### 5. Use-case / domain alignment
+### 5. Behavior / domain alignment
 
-- Every use-case's `depends-on` includes the domain models it operates on.
-- Every use-case's actions correspond to user actions described in at least one story.
-- Every observable outcome in a use-case maps to either a domain field or a derived value.
+- Every behavior's `depends-on` includes the domain models it operates on.
+- Every observable outcome in a behavior maps to either a domain field or a derived value.
 
 ### 6. Constitutional compliance
 
@@ -72,30 +70,30 @@ ANALYSIS REPORT — feature: <slug>
 Coverage
 --------
 ✅ NARRATIVE.md present (N words)
-❌ MISSING: stories/ (no story files)
+❌ MISSING: behaviors/ (no behavior files)
 ✅ models/ has 2 entries: domain.signal, domain.computed
-⚠ models/ missing: domain.<entity> referenced in story.<id>
+⚠ models/ missing: domain.<entity> referenced in behavior.<id>
 
 Reference integrity
 -------------------
-❌ story.signal.create depends-on: domain.signal (NOT FOUND in features/0001Specs/ecs/)
+❌ behavior.signal.create depends-on: domain.signal (NOT FOUND in Features/0001/Specs/)
 ✅ all other depends-on references resolve
 
-Story / scenario consistency
+Behavior / scenario consistency
 ----------------------------
-⚠ story.signal.create scenario 2 missing scenario sub-ID
+⚠ behavior.signal.create scenario 2 missing scenario sub-ID
 ✅ all other scenarios have IDs and are unique
 
 Outstanding clarifications
 --------------------------
 ⚠ 3 [NEEDS CLARIFICATION] markers remaining (run /sdd-clarify <feature>):
-  - features/0001/stories/signal.create.md:14 — propagation order not specified
-  - features/0001/models/signal.md:22 — equality semantics
-  - features/0001/errors/signal.cycle.md:9 — recovery affordance
+  - Features/0001/behaviors/signal.create.md:14 — propagation order not specified
+  - Features/0001/models/signal.md:22 — equality semantics
+  - Features/0001/errors/signal.cycle.md:9 — recovery affordance
 
-Use-case / domain alignment
+Behavior / domain alignment
 ---------------------------
-✅ use-case.graph.recompute depends on domain.signal (exists)
+✅ behavior.graph.recompute depends on domain.signal (exists)
 
 Constitutional compliance
 -------------------------

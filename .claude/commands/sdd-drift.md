@@ -19,7 +19,7 @@ Identify specs and implementations that are out of sync. Drift takes several for
 
 ## Steps
 
-1. **Walk all spec files** under `Specs/` and `features/`. Build a map of `id → {file_path, mtime}`.
+1. **Walk all spec files** under `Specs/` and `Features/`. Build a map of `id → {file_path, mtime}`.
 2. **Walk `Sources/`.** For each source file:
    - If it has `// SPEC: <id>`, record the pair.
    - If it has `// SPEC: manual`, ignore it.

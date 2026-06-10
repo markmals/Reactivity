@@ -2,13 +2,13 @@
 
 A fine-grained reactive system for Swift (`ReactiveGraph`), built **spec-first**. The spec is the source of truth; the Swift implementation in `Sources/` satisfies it and the Swift Testing suite in `Tests/` proves it. There is one platform — Swift — so there is no cross-platform reconciliation; reconciliation here is only ever between the **spec, the tests, and the code**.
 
-This repo is a pruned projection of a multiplatform spec-driven template, scoped to a single non-UI Swift library. Everything app-shaped (UI, design system, backends, simulators, other languages) has been removed. What remains is the verified SDD discipline: specs, stories, reverse pointers, TDD, three-stage review, and drift detection.
+This repo is a pruned projection of a multiplatform spec-driven template, scoped to a single non-UI Swift library. Everything app-shaped (UI, design system, backends, simulators, other languages) has been removed. What remains is the verified SDD discipline: specs, behaviors, reverse pointers, TDD, three-stage review, and drift detection.
 
 @.claude/rules/code-quality.md @.claude/rules/commit-discipline.md @.claude/rules/spec-conventions.md
 
 ## How this repo works
 
-**Specs are the source of truth.** Domain models (the reactive primitives and their invariants), stories (behavioral scenarios), use cases, and errors live as markdown in `Specs/` (cross-cutting) and `features/<NNNN>-<slug>/` (feature-scoped). The Swift code is a regeneration target: it is brought into conformance with the spec, never the other way around.
+**Specs are the source of truth.** Domain models (the reactive primitives and their invariants), behaviors (the contracts the graph upholds, pinned by Gherkin scenarios), and errors live as markdown in `Specs/` (cross-cutting) and `Features/<NNNN>-<slug>/` (feature-scoped). The Swift code is a regeneration target: it is brought into conformance with the spec, never the other way around.
 
 If you are tempted to encode a behavioral contract only in code, write a spec for it instead — then implement against the spec.
 
@@ -39,7 +39,7 @@ If something doesn't fit any of those, it's either a future feature (write a spe
 ├── Tests/
 │   └── ReactiveGraphTests/    ← Swift Testing suites, tagged with spec + scenario IDs
 ├── Specs/                     ← cross-cutting specs (CONVENTIONS, ARCHITECTURE, STACK)
-├── features/                  ← (you create) feature-scoped specs as <NNNN>-<slug>/
+├── Features/                  ← (you create) feature-scoped specs as <NNNN>-<slug>/
 ├── DEFECTS.md                 ← (you create) sub-spec defect log; wants to be empty
 ├── mise.toml                  ← tool versions + tasks (fmt / lint / test / build / docs)
 └── .claude/
@@ -58,7 +58,7 @@ If something doesn't fit any of those, it's either a future feature (write a spe
 - **Reverse pointers are mandatory.** Every type, function, or extension that realizes a spec carries `// SPEC: <id>` in `Sources/`. Tests are tagged with the spec IDs and scenario sub-IDs they verify. See `Specs/CONVENTIONS.md` for the exact Swift form.
 - **Spec → test → implementation.** The spec defines what must hold; the test proves it; the code satisfies it. None is the source of truth alone.
 - **Deviations are explicit.** Use `// SPEC: <id> (deviates: <reason>)` when the implementation must differ from the spec, and `// SPEC: manual` for genuinely internal code with no behavioral contract (plumbing, performance shims).
-- **Stories use Gherkin acceptance criteria.** See the `writing-user-stories` skill. Scenarios have stable sub-IDs that tests trace back to. For this library a "story" is a behavioral scenario over the reactive graph (e.g. _given a memo over a signal, when the signal changes, then the memo recomputes once_).
+- **Behaviors use Gherkin acceptance criteria.** See the `writing-behaviors` skill. A behavior states one contract the graph upholds; its scenarios have stable sub-IDs that tests trace back to (e.g. _given a memo over a signal, when the signal changes, then the memo recomputes once_). There is no user persona — this is a library.
 
 ## Slash commands
 
@@ -82,8 +82,8 @@ Procedural skills live under `.claude/skills/`. Use them rather than ad-hoc patt
 
 | Skill                            | When to invoke                                                                                                    |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `brainstorming-feature`          | Before starting any new feature or substantial change. Walks narrative → stories → models → errors.               |
-| `writing-user-stories`           | When authoring or reviewing a story file. Enforces Gherkin discipline.                                            |
+| `brainstorming-feature`          | Before starting any new feature or substantial change. Walks narrative → behaviors → models → errors.             |
+| `writing-behaviors`              | When authoring or reviewing a behavior file. Enforces Gherkin discipline; no user persona.                        |
 | `implementing-a-spec`            | The default "how to write code" workflow. Per-spec dispatch + three-stage review. Used by `/sdd-apply`.           |
 | `test-driven-development`        | When writing any production code. No production code without a failing test first. Invariants get property tests. |
 | `adversarial-review`             | The refutational third review stage, after spec-compliance and code-quality pass. Assumes the code is broken.     |
@@ -116,6 +116,6 @@ Builds and tests run through `swift` / `mise` — there is no Xcode project to l
 | "What's the reverse-pointer form?"     | `Specs/CONVENTIONS.md` → "Reverse pointers"     |
 | "How is the library layered?"          | `Specs/ARCHITECTURE.md`                         |
 | "What tool does the repo use for X?"   | `Specs/STACK.md`                                |
-| "How do I write a user story?"         | `.claude/skills/writing-user-stories/SKILL.md`  |
+| "How do I write a behavior spec?"      | `.claude/skills/writing-behaviors/SKILL.md`     |
 | "How do I write Swift here?"           | `.claude/skills/swift-development/SKILL.md`     |
 | "Should this rule be a hook or prose?" | `.claude/rules/enforcement-hierarchy.md`        |

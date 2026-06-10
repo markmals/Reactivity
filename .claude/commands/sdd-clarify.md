@@ -9,9 +9,9 @@ You are clarifying unspecified details in: `$ARGUMENTS`.
 
 Argument forms:
 
-- A feature slug: `0001-managing-items` (clarify everything in `features/<slug>/`)
+- A feature slug: `0001-managing-items` (clarify everything in `Features/<slug>/`)
 - A feature ID: `0001` (resolve to the slug; same as above)
-- A spec ID: `story.item.create` (clarify just that one spec file)
+- A spec ID: `behavior.item.create` (clarify just that one spec file)
 
 ## Intent
 
@@ -22,8 +22,8 @@ Inspired by spec-kit's `/speckit.clarify`. The convention is documented in `Spec
 ## Steps
 
 1. **Locate the target.** Resolve the argument:
-   - Feature slug or numeric ID → the directory `features/<NNNN>-<slug>/`.
-   - Spec ID → the file under that directory (or `sSpecs/) whose frontmatter `id:` matches.
+   - Feature slug or numeric ID → the directory `Features/<NNNN>-<slug>/`.
+   - Spec ID → the file under that directory (or `Specs/`) whose frontmatter `id:` matches.
 2. **Find markers.** `rg -n '\[NEEDS CLARIFICATION:' <target>` to enumerate every marker with file + line.
 3. **Categorize and prioritize.** Group markers by spec kind and category:
    - **Functional / behavioral** (what the API does or observably produces) — usually highest priority
@@ -60,8 +60,8 @@ After resolving the markers, commit the edits. See `.claude/rules/commit-discipl
 Natural boundaries:
 
 - **One commit per coherent topic of clarifications.** If five markers in one feature all clarify cleanup ordering, that's one commit (`features/<feature>: clarify cleanup ordering` — or the `specs` scope for a cross-cutting spec). If they clarify unrelated concerns, split.
-- **Spec edits only.** This command does not touch code or tests, so the commit should contain only files under `features/` or `specs/`. If your working tree has unrelated changes, stage explicitly — do not `git add .`.
-Specs/
+- **Spec edits only.** This command does not touch code or tests, so the commit should contain only files under `Features/` or `Specs/`. If your working tree has unrelated changes, stage explicitly — do not `git add .`.
+
 ## Implementation status
 
 The slash command is scaffolded; the agent drives the steps manually using `rg`, `AskUserQuestion`, and `Edit`. No additional tooling is needed.
