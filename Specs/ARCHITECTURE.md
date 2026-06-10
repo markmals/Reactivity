@@ -5,7 +5,7 @@ kind: architecture
 
 # Architecture
 
-> Orientation, not exhaustive reference. The behavioral contracts live in the `domain.*` and `story.*` specs; this document explains how the library is layered and how specs map onto Swift.
+> Orientation, not exhaustive reference. The behavioral contracts live in the `domain.*` and `behavior.*` specs; this document explains how the library is layered and how specs map onto Swift.
 
 ## Product overview
 
@@ -21,22 +21,22 @@ The most consequential structural decision in this library is the line between t
 ┌─────────────────────────────────────────────┐
 │  User closures (effects, memo bodies)        │  arbitrary side effects — the effectful edge
 ├─────────────────────────────────────────────┤
-│  Scheduler / propagation                     │  spec: story.reactive.* (ordering, batching, glitch-freedom)
+│  Scheduler / propagation                     │  spec: behavior.reactive.* (ordering, batching, glitch-freedom)
 ├─────────────────────────────────────────────┤
 │  Reactive graph (nodes, edges, dirtiness)    │  spec: domain.* — pure data structure + invariants
 ├─────────────────────────────────────────────┤
-│  Ownership / cleanup (owner tree)            │  spec: domain.owner, story.reactive.cleanup
+│  Ownership / cleanup (owner tree)            │  spec: domain.owner, behavior.reactive.cleanup
 └─────────────────────────────────────────────┘
 ```
 
-- **Pure core** — the graph (nodes, the source/observer edges, dirty-marking, topological reachability) and the ownership tree are plain data structures with invariants. No clock, no global mutable singletons beyond the well-defined reactive context, no I/O. Given the same sequence of reads/writes they behave identically every time. **This is where the behavioral tests live** — a story test drives the public API and asserts on observable outcomes (values, run counts, ordering) without standing up anything external.
+- **Pure core** — the graph (nodes, the source/observer edges, dirty-marking, topological reachability) and the ownership tree are plain data structures with invariants. No clock, no global mutable singletons beyond the well-defined reactive context, no I/O. Given the same sequence of reads/writes they behave identically every time. **This is where the behavioral tests live** — a behavior test drives the public API and asserts on observable outcomes (values, run counts, ordering) without standing up anything external.
 - **Effectful edge** — the user-supplied closures inside effects and memo bodies. The library invokes them; what they do is the caller's business. The library's contract is _when_ and _how often_ it invokes them, not _what_ they do.
 
-Dependencies point inward: the scheduler depends on the graph; the graph depends on nothing. Invariants ("a memo recomputes at most once per batch", "an owner disposes its children before itself") are stated in `domain.*`/`story.*` specs and are exactly the kind of "for all" property a property-based test can hammer — see the `test-driven-development` skill.
+Dependencies point inward: the scheduler depends on the graph; the graph depends on nothing. Invariants ("a memo recomputes at most once per batch", "an owner disposes its children before itself") are stated in `domain.*`/`behavior.*` specs and are exactly the kind of "for all" property a property-based test can hammer — see the `test-driven-development` skill.
 
 ## Concurrency model
 
-The package compiles under Swift 6 with `StrictConcurrency` enabled (see `Package.swift`). The reactive context (the "currently-tracking observer") is ambient state that must be established correctly across the graph; how that ambient context is represented and isolated — task-local, actor-isolated, or main-actor-pinned — is a **load-bearing behavioral contract**, not an implementation detail. Capture it in `domain.*`/`story.*` specs (e.g. _what happens when a signal is read outside any reactive context_, _whether tracking crosses an `await`_), mark genuinely internal isolation bookkeeping `// SPEC: manual`, and flag any divergence with `(deviates: …)`. The "Why Thread Local?" discussion the README links is the historical context for this decision.
+The package compiles under Swift 6 with `StrictConcurrency` enabled (see `Package.swift`). The reactive context (the "currently-tracking observer") is ambient state that must be established correctly across the graph; how that ambient context is represented and isolated — task-local, actor-isolated, or main-actor-pinned — is a **load-bearing behavioral contract**, not an implementation detail. Capture it in `domain.*`/`behavior.*` specs (e.g. _what happens when a signal is read outside any reactive context_, _whether tracking crosses an `await`_), mark genuinely internal isolation bookkeeping `// SPEC: manual`, and flag any divergence with `(deviates: …)`. The "Why Thread Local?" discussion the README links is the historical context for this decision.
 
 ## Module layout
 
@@ -46,18 +46,18 @@ Sources/
     ├── API.swift         ← the public surface (Signal, Memo, Effect, …)
     └── …                 ← graph, scheduler, ownership — split by responsibility, // SPEC: tagged
 Tests/
-└── ReactiveGraphTests/   ← Swift Testing suites, one per story/domain spec, tagged with spec + scenario IDs
+└── ReactiveGraphTests/   ← Swift Testing suites, one per behavior/domain spec, tagged with spec + scenario IDs
 ```
 
 **One library, possibly a set.** Additional related Swift libraries (e.g. integrations or higher-level primitives built on the core) would be new SPM targets/products under `Sources/`, sharing these specs. They are ordinary Swift modules that depend on `ReactiveGraph`; there are no platform projections to keep in sync.
 
 ## How specs map to Swift
 
-| Spec kind  | Realized as                                                                 | Reverse pointer location                                              |
-| ---------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `domain.*` | A primitive or value type and its invariants (Signal, Memo, Effect, Owner). | The type declaration in `Sources/`.                                   |
-| `story.*`  | Observable behavior of the graph under a sequence of reads/writes.          | The function(s) that produce that behavior; the `@Suite` in `Tests/`. |
-| `error.*`  | A surfaced failure mode (e.g. a dependency cycle, a read with no context).  | The throwing/trapping site that raises or reports it.                 |
+| Spec kind    | Realized as                                                                 | Reverse pointer location                                              |
+| ------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `domain.*`   | A primitive or value type and its invariants (Signal, Memo, Effect, Owner). | The type declaration in `Sources/`.                                   |
+| `behavior.*` | Observable behavior of the graph under a sequence of reads/writes.          | The function(s) that produce that behavior; the `@Suite` in `Tests/`. |
+| `error.*`    | A surfaced failure mode (e.g. a dependency cycle, a read with no context).  | The throwing/trapping site that raises or reports it.                 |
 
 ## Out of scope (this library)
 

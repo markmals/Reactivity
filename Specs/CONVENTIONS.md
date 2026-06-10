@@ -18,37 +18,36 @@ Specs describe **what** must hold. Tests prove it. The implementation satisfies 
 ## File and directory layout
 
 ```
-specs/                          ← cross-cutting (used by ≥ 2 features or library-wide)
+Specs/                          ← cross-cutting (used by ≥ 2 features or library-wide)
 ├── ARCHITECTURE.md             ← singular per-product
 ├── CONVENTIONS.md              ← this file
 ├── STACK.md                    ← the toolchain catalog
 ├── models/<id>.md              ← cross-cutting domain models (the reactive primitives)
 └── errors/<id>.md              ← cross-cutting error catalog entries
 
-features/<NNNN>-<slug>/         ← feature-scoped (only this feature uses it)
+Features/<NNNN>-<slug>/         ← feature-scoped (only this feature uses it)
 ├── NARRATIVE.md                ← singular per feature
 ├── README.md                   ← singular per feature; describes the folder
-├── stories/<id>.md             ← one behavioral story per file
-├── use-cases/<id>.md           ← one concrete use case per file
+├── behaviors/<id>.md           ← one behavioral contract per file (Gherkin scenarios)
 ├── models/<id>.md              ← one domain model per file
 └── errors/<id>.md              ← one error catalog entry per file
 ```
 
 ### One logical thing per file
 
-If a kind has multiple instances in a feature (multiple stories, multiple errors, multiple models), it gets a **directory** of `<id>.md` files. If a kind has exactly one instance per feature (the narrative), it stays a **file**.
+If a kind has multiple instances in a feature (multiple behaviors, multiple errors, multiple models), it gets a **directory** of `<id>.md` files. If a kind has exactly one instance per feature (the narrative), it stays a **file**.
 
-The directory name is the kebab-case equivalent of the kind name (`use-cases/`, not `use_cases/` or `useCases/`).
+The directory name is the kebab-case equivalent of the kind name (`behaviors/`, not `Behaviors/` or `behaviour/`).
 
 ### Cross-cutting vs feature-scoped
 
-A spec lives in `features/<n>/` until a _second_ feature depends on it. At that point it gets **promoted**: the file moves to `specs/<kind>/<id>.md`, but its **ID does not change**. Reverse pointers in code stay valid through the move.
+A spec lives in `Features/<n>/` until a _second_ feature depends on it. At that point it gets **promoted**: the file moves to `Specs/<kind>/<id>.md`, but its **ID does not change**. Reverse pointers in code stay valid through the move.
 
 The only specs that start cross-cutting are `ARCHITECTURE.md`, `STACK.md`, and this file.
 
 ## Frontmatter schema
 
-Every spec file (in `specs/<kind>/` or `features/<n>/<kind>/`, plus the singular files like `NARRATIVE.md`) starts with YAML frontmatter:
+Every spec file (in `Specs/<kind>/` or `Features/<n>/<kind>/`, plus the singular files like `NARRATIVE.md`) starts with YAML frontmatter:
 
 ```yaml
 ---
@@ -74,32 +73,31 @@ kind: architecture # the kind matches the file's role
 
 Kinds are the closed set of allowed `kind:` values, paired with their directory and ID prefix.
 
-| Kind           | Directory       | ID prefix                      | One per file? | Notes                                                                               |
-| -------------- | --------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------- |
-| `narrative`    | (singular file) | `narrative.<feature-slug>`     | yes           | One per feature.                                                                    |
-| `story`        | `stories/`      | `story.<feature>.<capability>` | yes           | Behavioral scenario over the reactive graph. Authored with `writing-user-stories`.  |
-| `use-case`     | `use-cases/`    | `usecase.<feature>.<scenario>` | yes           | Concrete API-usage walkthrough; complements stories.                                |
-| `domain`       | `models/`       | `domain.<entity>`              | yes           | A reactive primitive or value type: its shape, semantics, and invariants.           |
-| `error`        | `errors/`       | `error.<domain>.<kind>`        | yes           | An observable failure mode (e.g. a dependency cycle) + how the library surfaces it. |
-| `architecture` | (singular file) | `architecture`                 | yes           | Cross-cutting; one per product.                                                     |
-| `conventions`  | (this file)     | `conventions`                  | yes           | Cross-cutting; one per product.                                                     |
+| Kind           | Directory       | ID prefix                         | One per file? | Notes                                                                                                          |
+| -------------- | --------------- | --------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `narrative`    | (singular file) | `narrative.<feature-slug>`        | yes           | One per feature.                                                                                               |
+| `behavior`     | `behaviors/`    | `behavior.<feature>.<capability>` | yes           | A behavioral contract over the reactive graph, pinned by Gherkin scenarios. Authored with `writing-behaviors`. |
+| `domain`       | `models/`       | `domain.<entity>`                 | yes           | A reactive primitive or value type: its shape, semantics, and invariants.                                      |
+| `error`        | `errors/`       | `error.<domain>.<kind>`           | yes           | An observable failure mode (e.g. a dependency cycle) + how the library surfaces it.                            |
+| `architecture` | (singular file) | `architecture`                    | yes           | Cross-cutting; one per product.                                                                                |
+| `conventions`  | (this file)     | `conventions`                     | yes           | Cross-cutting; one per product.                                                                                |
 
 A kind can grow over time (e.g. a `benchmark` kind for performance contracts), but adding a kind is a deliberate change to this document, not an ad-hoc choice. See "Adding a new spec kind".
 
-> This is a non-UI library, so there are no `view-model`, `flow`, or `design-system` kinds. The behavioral target is `domain` (the primitives and their invariants) plus `story` (Gherkin scenarios over them).
+> This is a non-UI library, so there are no `view-model`, `flow`, `story`, or `use-case` kinds — those frame software around a user persona, which a reactive graph has no use for. The behavioral target is `domain` (the primitives and their invariants) plus `behavior` (the contracts the graph upholds, pinned by Gherkin scenarios).
 
 ## Stable IDs
 
 IDs are dotted, lowercase, hierarchical, and stable. The first segment is the kind prefix; the rest narrow to a specific instance.
 
-**Good:** `domain.signal`, `domain.memo`, `story.reactive.derivation`, `error.reactive.cycle`
+**Good:** `domain.signal`, `domain.memo`, `behavior.reactive.glitch-free`, `error.reactive.cycle`
 
 **Bad:** `Signal`, `reactive/derivation`, `domain-signal`, `model.signal` (use `domain.`)
 
 ### Stability rules
 
 - IDs are immutable once an implementation references them. Renaming requires a deliberate migration: update the spec ID, every `// SPEC:` reference, and every test tag in one commit.
-- IDs do not change when a spec is promoted from `features/` to `specs/`.
+- IDs do not change when a spec is promoted from `Features/` to `Specs/`.
 - IDs describe abstract behavior, not a specific Swift type name. If you rename `Signal` to `Source` in code, the spec ID `domain.signal` can stay (or migrate deliberately) — the ID tracks the concept.
 
 ### Filename = ID stem
@@ -107,7 +105,7 @@ IDs are dotted, lowercase, hierarchical, and stable. The first segment is the ki
 Filename matches the trailing segment of the ID, with dots → hyphens at the kind boundary and preserved within the stem:
 
 - `domain.signal` → `models/signal.md`
-- `story.reactive.derivation` → `stories/reactive.derivation.md`
+- `behavior.reactive.glitch-free` → `behaviors/reactive.glitch-free.md`
 - `error.reactive.cycle` → `errors/reactive.cycle.md`
 
 Dots are legal in macOS/Linux filenames and survive grep, git, and most editors. Keep them.
@@ -143,10 +141,10 @@ import Testing
 
 @testable import ReactiveGraph
 
-@Suite(.spec("story.reactive.derivation"))
+@Suite(.spec("behavior.reactive.derivation"))
 struct Derivation {
 
-    @Test(.scenario("scenario.reactive.derivation.recompute-once"))
+    @Test(.scenario("behavior.reactive.derivation.recompute-once"))
     func `a derived value recomputes once when its source changes`() {
         withReactiveScope {
             var runs = 0
@@ -169,29 +167,29 @@ struct Derivation {
 - Assert on **run counts and ordering**, not just values — a behavior that yields the right value but recomputes twice is a bug a value-only test misses.
 - Use `#expect` / `#require`, not XCTest's `XCTAssert*`.
 
-Each test must trace to a specific scenario, not just a story — that's what the `.scenario(...)` trait pins (Gherkin scenarios in story files have their own sub-IDs; see "Stories and scenarios").
+Each test must trace to a specific scenario, not just a behavior — that's what the `.scenario(...)` trait pins (Gherkin scenarios in behavior files have their own sub-IDs; see "Behaviors and scenarios").
 
-## Stories and scenarios
+## Behaviors and scenarios
 
-Stories follow the `writing-user-stories` skill. For this library the "user" is a developer using the reactive API; a story is a behavioral scenario over the graph. Each story file contains:
+Behaviors follow the `writing-behaviors` skill. A behavior file states one **contract** the reactive graph upholds, then pins it with Gherkin scenarios. There is no user persona — this is a library, so the "actor" is the reactive system, not a person. Each behavior file contains:
 
-1. Frontmatter with `id: story.<feature>.<capability>`
-2. An `As a / I want / So that` block (the developer's intent)
-3. An `# Acceptance Criteria` section with Gherkin scenarios
+1. Frontmatter with `id: behavior.<feature>.<capability>`
+2. A one-paragraph statement of the contract the behavior guarantees
+3. A `## Scenarios` section with Gherkin scenarios
 
-Each scenario has a stable sub-ID derived from its position and intent:
+Each scenario has a stable sub-ID that **extends the behavior's ID** with a short name. The `scenario.` word is intentionally omitted — the `.scenario("…")` trait already says it, so repeating it in the ID is redundant:
 
 ```md
-## Scenario 1: A derived value recomputes when its source changes
+## Scenario 1: A diamond updates the downstream value once
 
-<!-- id: scenario.reactive.derivation.recompute-once -->
+<!-- id: behavior.reactive.glitch-free.diamond -->
 
-- Given a derived value over a piece of reactive state
-- When the state's value changes
-- Then the derived value recomputes exactly once and yields the new result
+- Given a source feeding two derived values that both feed one downstream value
+- When the source changes
+- Then the downstream value recomputes exactly once
 ```
 
-Sub-IDs follow the pattern `scenario.<feature>.<capability>.<short-name>`. Tests reference them via the `.scenario("…")` trait described above.
+Sub-IDs follow the pattern `behavior.<feature>.<capability>.<short-name>` — the parent behavior ID plus a short scenario name. Tests reference them via the `.scenario("…")` trait described above.
 
 ## Marking unspecified or ambiguous content
 
@@ -260,11 +258,11 @@ Reconciliation is **not automatic**. The agent proposes; a human approves. Decid
 
 ## Adding a new feature
 
-1. Pick the next number: `features/<NNNN>-<slug>/`. Slug is kebab-case.
+1. Pick the next number: `Features/<NNNN>-<slug>/`. Slug is kebab-case.
 2. Copy `.claude/templates/feature/` into the new feature directory.
 3. Author `NARRATIVE.md` first (use the `brainstorming-feature` skill).
-4. Author stories from the narrative (Gherkin scenarios over the reactive API).
-5. Derive use-cases, models, and errors as needed. Not every feature uses every kind.
+4. Author behaviors from the narrative — each one a contract the graph upholds, pinned by Gherkin scenarios (use the `writing-behaviors` skill).
+5. Derive models and errors as needed. Not every feature uses every kind.
 6. Implement against the spec with `/sdd-apply <spec-id>` — write the failing Swift Testing scenarios first, then the minimum code to pass.
 
 ## Adding a new spec kind
@@ -278,7 +276,7 @@ Reconciliation is **not automatic**. The agent proposes; a human approves. Decid
 
 ## What is NOT a spec
 
-These are reference material an agent may read, but not the spec layer. Do not put them under `specs/` or in a feature folder's spec subdirectories.
+These are reference material an agent may read, but not the spec layer. Do not put them under `Specs/` or in a feature folder's spec subdirectories.
 
 - Prototype code, benchmarks-as-scratch, or sandbox explorations.
 - Meeting notes, RFCs, decision logs (use a `docs/` directory if you need one).

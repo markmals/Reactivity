@@ -4,12 +4,12 @@ The toolchain for this repo. It is a single Swift library built with Swift-nativ
 
 ## Specification
 
-| Concern             | Choice                                           |
-| ------------------- | ------------------------------------------------ |
-| Product specs       | Markdown in `specs/` & `features/`               |
-| Acceptance criteria | Gherkin-in-markdown (see `writing-user-stories`) |
-| Reverse pointers    | `// SPEC: <id>` comments in `Sources/`           |
-| Agent instructions  | `CLAUDE.md` + `.claude/`                         |
+| Concern             | Choice                                        |
+| ------------------- | --------------------------------------------- |
+| Product specs       | Markdown in `Specs/` & `Features/`            |
+| Acceptance criteria | Gherkin-in-markdown (see `writing-behaviors`) |
+| Reverse pointers    | `// SPEC: <id>` comments in `Sources/`        |
+| Agent instructions  | `CLAUDE.md` + `.claude/`                      |
 
 ## Language & package
 
@@ -26,7 +26,7 @@ The toolchain for this repo. It is a single Swift library built with Swift-nativ
 | -------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | Test framework | Swift Testing (`import Testing`, `@Suite` / `@Test`, `#expect` / `#require`)                      | [developer.apple.com/documentation/testing](https://developer.apple.com/documentation/testing) |
 | Runner         | `swift test` (via `mise run test`)                                                                | —                                                                                              |
-| Spec tagging   | `.spec(...)` / `.scenario(...)` custom traits + raw-identifier names — see `specs/CONVENTIONS.md` | —                                                                                              |
+| Spec tagging   | `.spec(...)` / `.scenario(...)` custom traits + raw-identifier names — see `Specs/CONVENTIONS.md` | —                                                                                              |
 | Properties     | Parameterized `@Test(arguments:)` for "for all" invariants — see `test-driven-development`        | —                                                                                              |
 
 ## Formatting & linting
