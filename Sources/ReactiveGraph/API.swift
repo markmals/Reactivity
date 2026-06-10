@@ -1,9 +1,12 @@
+// SPEC: manual
+// Placeholder for the not-yet-implemented surface; carries no behavioral contract.
 private func todo() -> Never {
     fatalError("Not yet implemented")
 }
 
 public typealias Dispose = () -> Void
 
+// SPEC: domain.owner
 @discardableResult
 public func withReactiveScope<T>(_ root: @escaping (@escaping Dispose) async throws -> T)
     async rethrows -> T
@@ -26,6 +29,7 @@ public func withReactiveScope<T>(_ root: @escaping () throws -> T) rethrows -> T
     todo()
 }
 
+// SPEC: domain.observer
 public struct ObservationHandle: Sendable {
     public func dispose() {
         todo()
@@ -37,6 +41,7 @@ public struct ObservationOptions: Sendable {
     public init() {}
 }
 
+// SPEC: domain.observer
 @discardableResult
 public func observe(
     isolation: isolated (any Actor)? = #isolation,
@@ -189,6 +194,7 @@ public func observe<Next, Init>(
     todo()
 }
 
+// SPEC: domain.owner
 public func onCleanup(_ cleanupCallback: @escaping () -> Void) {
     todo()
 }
@@ -197,6 +203,7 @@ public func onCleanup(_ cleanupCallback: @escaping () async -> Void) async {
     todo()
 }
 
+// SPEC: error.reactive.unhandled
 public func onError(
     _ body: @escaping () throws -> Void, handle handler: @escaping (any Error) -> Void
 ) {
@@ -222,6 +229,7 @@ public func onError(
     todo()
 }
 
+// SPEC: behavior.reactive.untracking
 public func withoutTracking<T>(_ body: () throws -> T) rethrows -> T {
     todo()
 }
@@ -230,16 +238,19 @@ public func withoutTracking<T>(_ body: () async throws -> T) async rethrows -> T
     todo()
 }
 
+// SPEC: domain.signal
 public protocol ReadableSignal<Wrapped> {
     associatedtype Wrapped
     var wrappedValue: Wrapped { get }
 }
 
+// SPEC: domain.signal
 public protocol WritableSignal<Wrapped>: ReadableSignal {
     associatedtype Wrapped
     var wrappedValue: Wrapped { get nonmutating set }
 }
 
+// SPEC: domain.state
 @propertyWrapper
 public struct State<Wrapped>: WritableSignal, Sendable {
     public init(wrappedValue: Wrapped) {
@@ -259,11 +270,13 @@ public struct State<Wrapped>: WritableSignal, Sendable {
         todo()
     }
 
+    // SPEC: behavior.reactive.untracking
     public func peek() -> Wrapped {
         todo()
     }
 }
 
+// SPEC: domain.derived-state
 @propertyWrapper
 public struct DerivedState<Wrapped>: ReadableSignal, Sendable {
     public init(wrappedValue expression: @autoclosure @escaping () throws -> Wrapped) {
@@ -279,6 +292,7 @@ public struct DerivedState<Wrapped>: ReadableSignal, Sendable {
     }
 }
 
+// SPEC: domain.context
 @propertyWrapper
 public struct Context<Wrapped>: Sendable {
     public init(wrappedValue: Wrapped) {
@@ -294,6 +308,7 @@ public struct Context<Wrapped>: Sendable {
     }
 }
 
+// SPEC: domain.context
 public struct ContextHandle<Wrapped>: Sendable {
     @discardableResult
     public func withValue<Passthrough>(_ body: () throws -> Passthrough) rethrows -> Passthrough {
