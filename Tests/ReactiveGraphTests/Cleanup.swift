@@ -1,10 +1,10 @@
 import ReactiveGraph
 import Testing
 
-@Suite
+@Suite(.spec("behavior.reactive.cleanup"))
 struct CleanupTests {
-    @Test("Clean an effect")
-    func testCleanEffect() async {
+    @Test(.scenario("behavior.reactive.cleanup.runs-before-rerun"))
+    func `runs a cleanup before the effect runs again`() async {
         await withReactiveScope {
             @State var sign = "thoughts"
             var temp: String?
@@ -30,8 +30,8 @@ struct CleanupTests {
         }
     }
 
-    @Test("Explicit scope disposal")
-    func testExplicitScopeDisposal() {
+    @Test(.scenario("behavior.reactive.cleanup.runs-on-dispose"))
+    func `runs a cleanup when the scope is disposed`() {
         var temp: String?
         var disposer: Dispose!
 

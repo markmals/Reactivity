@@ -1,10 +1,10 @@
 import ReactiveGraph
 import Testing
 
-@Suite
-struct ObservationTests {
-    @Test("should clear subscriptions when untracked by all subscribers")
-    func testClearSubscriptionsWhenUntracked() {
+@Suite(.spec("behavior.reactive.effects"))
+struct EffectTests {
+    @Test(.scenario("behavior.reactive.effects.dispose-stops"))
+    func `stops re-running an effect after it is disposed`() {
         withReactiveScope {
             @State var a = 1
             var computationCount = 0
@@ -27,63 +27,8 @@ struct ObservationTests {
         }
     }
 
-    @Test("should not run untracked inner effect")
-    func testDoNotRunUntrackedInnerEffect() {
-        withReactiveScope {
-            @State var a = 3
-            @DerivedState var b = a > 0
-
-            var inner: ObservationHandle?
-            observe {
-                if b {
-                    onCleanup {
-                        inner?.dispose()
-                        inner = nil
-                    }
-                    inner = observe {
-                        if a == 0 {
-                            Issue.record("Must never run when a == 0")
-                        }
-                    }
-                }
-            }
-
-            a = 2
-            a = 1
-            a = 0
-        }
-    }
-
-    @Test("should run outer effect first")
-    func testRunOuterEffectFirst() {
-        withReactiveScope {
-            @State var a = 1
-            @State var b = 1
-
-            var inner: ObservationHandle?
-            observe {
-                if a != 0 {
-                    onCleanup {
-                        inner?.dispose()
-                        inner = nil
-                    }
-                    inner = observe {
-                        // Trigger read
-                        _ = b
-                        if a == 0 {
-                            Issue.record("Must never run when a == 0")
-                        }
-                    }
-                }
-            }
-
-            b = 0
-            a = 0
-        }
-    }
-
-    @Test("should not trigger inner effect when resolve maybe dirty")
-    func testNoInnerTriggerOnMaybeDirty() {
+    @Test(.scenario("behavior.reactive.effects.settles-unchanged"))
+    func `does not re-run an effect when a value settles unchanged`() {
         withReactiveScope {
             @State var a = 0
             @DerivedState var b = a % 2
@@ -102,8 +47,40 @@ struct ObservationTests {
         }
     }
 
-    @Test("should trigger effects in sequence in reactive scope")
-    func testEffectsSequenceInScope() {
+    @Test(.scenario("behavior.reactive.effects.change-through-chain"))
+    func `re-runs an effect once for a change reached through a chain`() {
+        withReactiveScope {
+            @State var a = false
+            @DerivedState var b = a
+            @DerivedState var c = {
+                // Trigger read
+                _ = b
+                return 0
+            }()
+            @DerivedState var d = {
+                // Trigger read
+                _ = c
+                return b
+            }()
+
+            var triggers = 0
+            observe {
+                // Trigger read
+                _ = d
+                triggers += 1
+            }
+
+            #expect(triggers == 1)
+            a = true
+            #expect(triggers == 2)
+        }
+    }
+}
+
+@Suite(.spec("behavior.reactive.effect-ordering"))
+struct EffectOrderingTests {
+    @Test(.scenario("behavior.reactive.effect-ordering.registration-order"))
+    func `runs sibling effects in registration order`() {
         withReactiveScope {
             @State var a = 0
             @State var b = 0
@@ -130,8 +107,8 @@ struct ObservationTests {
         }
     }
 
-    @Test("should trigger inner effects in sequence")
-    func testInnerEffectsSequence() {
+    @Test(.scenario("behavior.reactive.effect-ordering.nested-registration-order"))
+    func `runs nested effects in registration order`() {
         withReactiveScope {
             @State var a = 0
             @State var b = 0
@@ -161,8 +138,8 @@ struct ObservationTests {
         }
     }
 
-    @Test("duplicate subscribers should not affect the notify order")
-    func testDuplicateSubscribersKeepNotifyOrder() {
+    @Test(.scenario("behavior.reactive.effect-ordering.duplicate-subscribers"))
+    func `keeps run order when a source has duplicate subscribers`() {
         withReactiveScope {
             @State var source1 = 0
             @State var source2 = 0
@@ -192,8 +169,8 @@ struct ObservationTests {
         }
     }
 
-    @Test("should handle side effect with inner effects")
-    func testHandleSideEffectWithInnerEffects() {
+    @Test(.scenario("behavior.reactive.effect-ordering.rerun-order"))
+    func `re-runs affected effects in registration order`() {
         withReactiveScope {
             @State var a = 0
             @State var b = 0
@@ -220,33 +197,62 @@ struct ObservationTests {
             }
         }
     }
+}
 
-    @Test("should handle flags are indirectly updated during checkDirty")
-    func testIndirectFlagsDuringDirtyCheck() {
+@Suite(.spec("behavior.reactive.nested-effects"))
+struct NestedEffectTests {
+    @Test(.scenario("behavior.reactive.nested-effects.cleanup-before-rerun"))
+    func `never runs a disposed inner effect`() {
         withReactiveScope {
-            @State var a = false
-            @DerivedState var b = a
-            @DerivedState var c = {
-                // Trigger read
-                _ = b
-                return 0
-            }()
-            @DerivedState var d = {
-                // Trigger read
-                _ = c
-                return b
-            }()
+            @State var a = 3
+            @DerivedState var b = a > 0
 
-            var triggers = 0
+            var inner: ObservationHandle?
             observe {
-                // Trigger read
-                _ = d
-                triggers += 1
+                if b {
+                    onCleanup {
+                        inner?.dispose()
+                        inner = nil
+                    }
+                    inner = observe {
+                        if a == 0 {
+                            Issue.record("Must never run when a == 0")
+                        }
+                    }
+                }
             }
 
-            #expect(triggers == 1)
-            a = true
-            #expect(triggers == 2)
+            a = 2
+            a = 1
+            a = 0
+        }
+    }
+
+    @Test(.scenario("behavior.reactive.nested-effects.outer-first"))
+    func `runs the outer effect before its inner effect`() {
+        withReactiveScope {
+            @State var a = 1
+            @State var b = 1
+
+            var inner: ObservationHandle?
+            observe {
+                if a != 0 {
+                    onCleanup {
+                        inner?.dispose()
+                        inner = nil
+                    }
+                    inner = observe {
+                        // Trigger read
+                        _ = b
+                        if a == 0 {
+                            Issue.record("Must never run when a == 0")
+                        }
+                    }
+                }
+            }
+
+            b = 0
+            a = 0
         }
     }
 }

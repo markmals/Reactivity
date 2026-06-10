@@ -1,10 +1,10 @@
 import ReactiveGraph
 import Testing
 
-@Suite
-struct GraphUpdateTests {
-    @Test("should drop A -> B -> A updates")
-    func testShouldDropUpdates() {
+@Suite(.spec("behavior.reactive.glitch-free"))
+struct GlitchFreedomTests {
+    @Test(.scenario("behavior.reactive.glitch-free.drop-redundant"))
+    func `drops redundant recomputation on a re-entrant path`() {
         //     A
         //   / |
         //  B  | <- Looks like a flag doesn't it? :D
@@ -36,8 +36,8 @@ struct GraphUpdateTests {
         }
     }
 
-    @Test("should only update each state value once (diamond graph)")
-    func testDiamondDependencyProblem() {
+    @Test(.scenario("behavior.reactive.glitch-free.diamond"))
+    func `updates a diamond downstream value once`() {
         // In this scenario "D" should only update once when "A" receives
         // an update. This is referred to as the "diamond dependency problem".
         //     A
@@ -66,8 +66,8 @@ struct GraphUpdateTests {
         }
     }
 
-    @Test("should only update every state value once (diamond graph + tail)")
-    func testDiamondDependencyProblemWithTail() {
+    @Test(.scenario("behavior.reactive.glitch-free.diamond-tail"))
+    func `updates a diamond with a tail once`() {
         // "E" will be likely updated twice if our mark+sweep logic is buggy.
         //     A
         //   /   \
@@ -98,37 +98,8 @@ struct GraphUpdateTests {
         }
     }
 
-    @Test("should bail out if result is the same")
-    func testBailOut() {
-        // Bail out if value of "B" never changes
-        // A -> B -> C
-
-        withReactiveScope {
-            @State var a = "a"
-
-            @DerivedState var b = {
-                // Trigger read
-                _ = a
-                return "foo"
-            }()
-
-            var computationCount = 0
-            @DerivedState var c = {
-                computationCount += 1
-                return b
-            }()
-
-            #expect(c == "foo")
-            #expect(computationCount == 1)
-
-            a = "aa"
-            #expect(c == "foo")
-            #expect(computationCount == 1)
-        }
-    }
-
-    @Test("should only update every reactive state value once (jagged diamond graph + tails)")
-    func testJaggedDiamondUpdatesOnce() {
+    @Test(.scenario("behavior.reactive.glitch-free.jagged-diamond"))
+    func `updates each node of a jagged diamond once and preserves order`() {
         withReactiveScope {
             @State var a = "a"
 
@@ -216,9 +187,163 @@ struct GraphUpdateTests {
             #expect(fStep < gStep)
         }
     }
+}
 
-    @Test("should only subscribe to signals listened to")
-    func testSubscribeOnlyToListenedSignals() {
+@Suite(.spec("behavior.reactive.equality-gating"))
+struct EqualityGatingTests {
+    @Test(.scenario("behavior.reactive.equality-gating.unchanged-bails-out"))
+    func `stops propagation when a recomputed value is unchanged`() {
+        // Bail out if value of "B" never changes
+        // A -> B -> C
+
+        withReactiveScope {
+            @State var a = "a"
+
+            @DerivedState var b = {
+                // Trigger read
+                _ = a
+                return "foo"
+            }()
+
+            var computationCount = 0
+            @DerivedState var c = {
+                computationCount += 1
+                return b
+            }()
+
+            #expect(c == "foo")
+            #expect(computationCount == 1)
+
+            a = "aa"
+            #expect(c == "foo")
+            #expect(computationCount == 1)
+        }
+    }
+
+    @Test(.scenario("behavior.reactive.equality-gating.one-of-many-changed"))
+    func `still updates a value when one input changed and another did not`() {
+        // In this scenario "C" always returns the same value. When "A"
+        // changes, "B" will update, then "C" at which point its update
+        // to "D" will be unmarked. But "D" must still update because
+        // "B" marked it. If "D" isn't updated, then we have a bug.
+        //     A
+        //   /   \
+        //  B     *C <- returns same value every time
+        //   \   /
+        //     D
+
+        withReactiveScope {
+            @State var a = "a"
+            @DerivedState var b = a
+            @DerivedState var c = {
+                // Trigger read
+                _ = a
+                return "c"
+            }()
+
+            var computationCount = 0
+            var value = ""
+            @DerivedState var d = {
+                computationCount += 1
+                value = "\(b) \(c)"
+                return "\(b) \(c)"
+            }()
+
+            #expect(d == "a c")
+            computationCount = 0
+
+            a = "aa"
+            // Trigger read
+            _ = d
+            #expect(value == "aa c")
+            #expect(computationCount == 1)
+        }
+    }
+
+    @Test(.scenario("behavior.reactive.equality-gating.changed-sibling"))
+    func `still updates a value when one input changed and two siblings did not`() {
+        // In this scenario both "C" and "D" always return the same
+        // value. But "E" must still update because "A" marked it.
+        // If "E" isn't updated, then we have a bug.
+        //     A
+        //   / | \
+        //  B *C *D
+        //   \ | /
+        //     E
+
+        withReactiveScope {
+            @State var a = "a"
+            @DerivedState var b = a
+            @DerivedState var c = {
+                // Trigger read
+                _ = a
+                return "c"
+            }()
+            @DerivedState var d = {
+                // Trigger read
+                _ = a
+                return "d"
+            }()
+
+            var computationCount = 0
+            @DerivedState var e = {
+                computationCount += 1
+                return b + " " + c + " " + d
+            }()
+
+            #expect(e == "a c d")
+            computationCount = 0
+
+            a = "aa"
+            // Trigger read
+            _ = e
+            #expect(e == "aa c d")
+            #expect(computationCount == 1)
+        }
+    }
+
+    @Test(.scenario("behavior.reactive.equality-gating.all-unchanged"))
+    func `does not update a value when all of its inputs are unchanged`() {
+        // In this scenario "B" and "C" always return the same value. When "A"
+        // changes, "D" should not update.
+        //     A
+        //   /   \
+        // *B     *C
+        //   \   /
+        //     D
+
+        withReactiveScope {
+            @State var a = "a"
+            @DerivedState var b = {
+                // Trigger read
+                _ = a
+                return "b"
+            }()
+            @DerivedState var c = {
+                // Trigger read
+                _ = a
+                return "c"
+            }()
+
+            var computationCount = 0
+            @DerivedState var d = {
+                computationCount += 1
+                return "\(b) \(c)"
+            }()
+
+            #expect(d == "b c")
+            computationCount = 0
+
+            a = "aa"
+            #expect(computationCount == 0)
+        }
+    }
+}
+
+@Suite(.spec("behavior.reactive.dynamic-dependencies"))
+struct DynamicDependencyTests {
+    @Test(.scenario("behavior.reactive.dynamic-dependencies.unread-source-ignored"))
+    func `does not compute a derived value that is never read`() {
         //    *A
         //   /   \
         // *B     C <- we don't listen to C
@@ -242,8 +367,8 @@ struct GraphUpdateTests {
         }
     }
 
-    @Test("should only subscribe to signals listened to II")
-    func testSubscribeOnlyToListenedSignalsII() {
+    @Test(.scenario("behavior.reactive.dynamic-dependencies.disposed-stops"))
+    func `stops recomputing a chain once its only observer is disposed`() {
         // Here both "B" and "C" are active in the beginning, but
         // "B" becomes inactive later. At that point it should
         // not receive any updates anymore.
@@ -290,90 +415,8 @@ struct GraphUpdateTests {
         }
     }
 
-    @Test("should ensure subs update even if one dep unmarks it")
-    func testSubsUpdateWhenOneDepUnmarks() {
-        // In this scenario "C" always returns the same value. When "A"
-        // changes, "B" will update, then "C" at which point its update
-        // to "D" will be unmarked. But "D" must still update because
-        // "B" marked it. If "D" isn't updated, then we have a bug.
-        //     A
-        //   /   \
-        //  B     *C <- returns same value every time
-        //   \   /
-        //     D
-
-        withReactiveScope {
-            @State var a = "a"
-            @DerivedState var b = a
-            @DerivedState var c = {
-                // Trigger read
-                _ = a
-                return "c"
-            }()
-
-            var computationCount = 0
-            var value = ""
-            @DerivedState var d = {
-                computationCount += 1
-                value = "\(b) \(c)"
-                return "\(b) \(c)"
-            }()
-
-            #expect(d == "a c")
-            computationCount = 0
-
-            a = "aa"
-            // Trigger read
-            _ = d
-            #expect(value == "aa c")
-            #expect(computationCount == 1)
-        }
-    }
-
-    @Test("should ensure subs update even if two deps unmark it")
-    func testSubsUpdateWhenTwoDepsUnmark() {
-        // In this scenario both "C" and "D" always return the same
-        // value. But "E" must still update because "A" marked it.
-        // If "E" isn't updated, then we have a bug.
-        //     A
-        //   / | \
-        //  B *C *D
-        //   \ | /
-        //     E
-
-        withReactiveScope {
-            @State var a = "a"
-            @DerivedState var b = a
-            @DerivedState var c = {
-                // Trigger read
-                _ = a
-                return "c"
-            }()
-            @DerivedState var d = {
-                // Trigger read
-                _ = a
-                return "d"
-            }()
-
-            var computationCount = 0
-            @DerivedState var e = {
-                computationCount += 1
-                return b + " " + c + " " + d
-            }()
-
-            #expect(e == "a c d")
-            computationCount = 0
-
-            a = "aa"
-            // Trigger read
-            _ = e
-            #expect(e == "aa c d")
-            #expect(computationCount == 1)
-        }
-    }
-
-    @Test("should support lazy branches")
-    func testSupportsLazyBranches() {
+    @Test(.scenario("behavior.reactive.dynamic-dependencies.conditional-branch"))
+    func `tracks only the source on the branch it took`() {
         withReactiveScope {
             @State var a = 0
             @DerivedState var b = a
@@ -387,42 +430,4 @@ struct GraphUpdateTests {
             #expect(c == 0)
         }
     }
-
-    @Test("should not update a sub if all deps unmark it")
-    func testNoUpdateIfAllDepsUnmark() {
-        // In this scenario "B" and "C" always return the same value. When "A"
-        // changes, "D" should not update.
-        //     A
-        //   /   \
-        // *B     *C
-        //   \   /
-        //     D
-
-        withReactiveScope {
-            @State var a = "a"
-            @DerivedState var b = {
-                // Trigger read
-                _ = a
-                return "b"
-            }()
-            @DerivedState var c = {
-                // Trigger read
-                _ = a
-                return "c"
-            }()
-
-            var computationCount = 0
-            @DerivedState var d = {
-                computationCount += 1
-                return "\(b) \(c)"
-            }()
-
-            #expect(d == "b c")
-            computationCount = 0
-
-            a = "aa"
-            #expect(computationCount == 0)
-        }
-    }
-
 }

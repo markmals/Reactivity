@@ -1,10 +1,10 @@
 import ReactiveGraph
 import Testing
 
-@Suite
+@Suite(.spec("behavior.reactive.context"))
 struct ContextTests {
-    @Test("create and use context")
-    func testContext() {
+    @Test(.scenario("behavior.reactive.context.read-in-scope"))
+    func `a read yields the value provided for its scope`() {
         @Context var ctx = 0
 
         $ctx.withValue {
@@ -16,8 +16,8 @@ struct ContextTests {
         }
     }
 
-    @Test("nested context")
-    func testNestedContext() {
+    @Test(.scenario("behavior.reactive.context.nested-shadowing"))
+    func `a nested provider shadows the outer value`() {
         @Context var ctx = 0
 
         $ctx.withValue {

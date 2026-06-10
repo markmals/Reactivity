@@ -1,14 +1,14 @@
 import ReactiveGraph
 import Testing
 
-@Suite
-struct ErrorHandlingTests {
-    struct TestError: Error {
-        init() {}
-    }
+struct TestError: Error {
+    init() {}
+}
 
-    @Test("should keep graph consistent on errors during activation")
-    func testKeepsGraphConsistentOnErrorsInActivation() {
+@Suite(.spec("behavior.reactive.error-propagation"))
+struct ErrorPropagationTests {
+    @Test(.scenario("behavior.reactive.error-propagation.graph-consistent-on-activation"))
+    func `surfaces a first read error and keeps other values working`() {
         @State var a = 0
         @DerivedState var b: Never = try {
             throw TestError()
@@ -23,8 +23,8 @@ struct ErrorHandlingTests {
         #expect(c == 1)
     }
 
-    @Test("should keep graph consistent on errors in computeds")
-    func testKeepsGraphConsistentOnErrorsInDerivedStateComputations() {
+    @Test(.scenario("behavior.reactive.error-propagation.graph-consistent-on-recompute"))
+    func `surfaces a recompute error and recovers afterward`() {
         @State var a = 0
         @DerivedState var b = try {
             if a == 1 {
@@ -46,17 +46,20 @@ struct ErrorHandlingTests {
         #expect(c == 2)
     }
 
-    @Test("No Handler")
-    func testCatchErrorNoHandler() {
+    @Test(.scenario("behavior.reactive.error-propagation.no-handler-propagates"))
+    func `propagates an unhandled error out of the scope`() {
         #expect(throws: TestError.self) {
             try withReactiveScope {
                 throw TestError()
             }
         }
     }
+}
 
-    @Test("Top level")
-    func testCatchErrorTopLevel() {
+@Suite(.spec("behavior.reactive.error-boundaries"))
+struct ErrorBoundaryTests {
+    @Test(.scenario("behavior.reactive.error-boundaries.catches-body"))
+    func `delivers a thrown error to its handler`() {
         var errored = false
 
         #expect(throws: Never.self) {
@@ -73,8 +76,8 @@ struct ErrorHandlingTests {
         #expect(errored)
     }
 
-    @Test("Nested in catchError")
-    func testCatchErrorNested() {
+    @Test(.scenario("behavior.reactive.error-boundaries.rethrow-to-outer"))
+    func `passes a rethrown error to the next handler`() {
         var errored = false
 
         #expect(throws: Never.self) {
@@ -98,8 +101,8 @@ struct ErrorHandlingTests {
         #expect(errored)
     }
 
-    @Test("In initial effect")
-    func testCatchErrorInInitialEffect() {
+    @Test(.scenario("behavior.reactive.error-boundaries.initial-effect"))
+    func `catches an error during an effect first run`() {
         var errored = false
 
         #expect(throws: Never.self) {
@@ -116,8 +119,8 @@ struct ErrorHandlingTests {
         #expect(errored)
     }
 
-    @Test("In update effect")
-    func testCatchErrorInUpdateEffect() {
+    @Test(.scenario("behavior.reactive.error-boundaries.update-effect"))
+    func `catches an error when an effect re-runs`() {
         var errored = false
 
         withReactiveScope {
@@ -141,9 +144,12 @@ struct ErrorHandlingTests {
 
         #expect(errored)
     }
+}
 
-    @Test("In initial nested effect")
-    func testCatchErrorInInitialNestedEffect() {
+@Suite(.spec("behavior.reactive.nested-error-boundaries"))
+struct NestedErrorBoundaryTests {
+    @Test(.scenario("behavior.reactive.nested-error-boundaries.nested-initial-effect"))
+    func `catches an error during a nested effect first run`() {
         var errored = false
 
         #expect(throws: Never.self) {
@@ -164,8 +170,8 @@ struct ErrorHandlingTests {
         #expect(errored)
     }
 
-    @Test("In nested update effect")
-    func testCatchErrorInNestedUpdateEffect() {
+    @Test(.scenario("behavior.reactive.nested-error-boundaries.nested-update-effect"))
+    func `catches an error when a nested effect re-runs`() {
         var errored = false
 
         withReactiveScope { _ in
@@ -192,8 +198,8 @@ struct ErrorHandlingTests {
         #expect(errored)
     }
 
-    @Test("In nested update effect different levels")
-    func testCatchErrorNestedUpdateDifferentLevels() {
+    @Test(.scenario("behavior.reactive.nested-error-boundaries.different-levels"))
+    func `catches an error from an effect nested below the handler`() {
         var errored = false
 
         withReactiveScope {
@@ -221,8 +227,8 @@ struct ErrorHandlingTests {
         #expect(errored)
     }
 
-    @Test("In nested memo")
-    func testCatchErrorInNestedMemo() {
+    @Test(.scenario("behavior.reactive.nested-error-boundaries.nested-memo"))
+    func `catches an error thrown inside a nested derived computation`() {
         var errored = false
 
         #expect(throws: Never.self) {

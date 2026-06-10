@@ -1,10 +1,10 @@
 import ReactiveGraph
 import Testing
 
-@Suite
+@Suite(.spec("behavior.reactive.derivation"))
 struct DerivedTests {
-    @Test("should correctly propagate changes through derived state")
-    func testChainedStatePropagation() {
+    @Test(.scenario("behavior.reactive.derivation.chained-propagation"))
+    func `propagates a change through a chain of derived values`() {
         withReactiveScope {
             @State var source = 0
             @DerivedState var c1 = source % 2
@@ -21,8 +21,8 @@ struct DerivedTests {
         }
     }
 
-    @Test("should propagate updated source value through chained computations")
-    func testSourceValuePropagation() {
+    @Test(.scenario("behavior.reactive.derivation.multi-path-source"))
+    func `reflects a source change reached by two paths`() {
         withReactiveScope {
             @State var source = 0
             @DerivedState var a = source
@@ -35,9 +35,12 @@ struct DerivedTests {
             #expect(d == 2)
         }
     }
+}
 
-    @Test("should handle flags are indirectly updated during checkDirty")
-    func testIndirectFlagUpdates() {
+@Suite(.spec("behavior.reactive.equality-gating"))
+struct DerivedEqualityGatingTests {
+    @Test(.scenario("behavior.reactive.equality-gating.indirect-check"))
+    func `settles a value correctly when an intermediate input is re-checked`() {
         withReactiveScope {
             @State var a = false
             @DerivedState var b = a
@@ -60,8 +63,8 @@ struct DerivedTests {
         }
     }
 
-    @Test("should not update if the state value is reverted")
-    func testRevertedValueOptimization() {
+    @Test(.scenario("behavior.reactive.equality-gating.reverted-source"))
+    func `does not recompute when a source is changed and reverted`() {
         withReactiveScope {
             var computationCount = 0
 

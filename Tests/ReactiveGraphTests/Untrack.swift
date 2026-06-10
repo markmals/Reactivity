@@ -1,10 +1,10 @@
 import ReactiveGraph
 import Testing
 
-@Suite
+@Suite(.spec("behavior.reactive.untracking"))
 struct WithoutTrackingTests {
-    @Test("should pause tracking in derived")
-    func testPauseTrackingInDerived() {
+    @Test(.scenario("behavior.reactive.untracking.derived-without-tracking"))
+    func `creates no dependency for a source read inside withoutTracking in a derived value`() {
         withReactiveScope {
             @State var source = 0
 
@@ -26,8 +26,8 @@ struct WithoutTrackingTests {
         }
     }
 
-    @Test("should pause tracking in observe")
-    func testPauseTrackingInObserve() {
+    @Test(.scenario("behavior.reactive.untracking.effect-without-tracking"))
+    func `creates no dependency for a source read inside withoutTracking in an effect`() {
         withReactiveScope {
             @State var source = 0
             @State var gate = 0
@@ -72,10 +72,10 @@ struct WithoutTrackingTests {
     }
 }
 
-@Suite
+@Suite(.spec("behavior.reactive.untracking"))
 struct PeekTests {
-    @Test("should pause tracking in derived")
-    func testPauseTrackingInDerived() {
+    @Test(.scenario("behavior.reactive.untracking.derived-peek"))
+    func `creates no dependency for a source read through peek in a derived value`() {
         withReactiveScope {
             @State var source = 0
 
@@ -97,8 +97,8 @@ struct PeekTests {
         }
     }
 
-    @Test("should pause tracking in observe")
-    func testPauseTrackingInObserve() {
+    @Test(.scenario("behavior.reactive.untracking.effect-peek"))
+    func `creates no dependency for a source read through peek in an effect`() {
         withReactiveScope {
             @State var source = 0
             @State var gate = 0
