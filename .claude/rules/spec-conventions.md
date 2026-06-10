@@ -4,7 +4,7 @@
 
 ## The compact
 
-- **Specs in `specs/` and `features/<n>/` are the source of truth.** The Swift implementation must satisfy them.
+- **Specs in `Specs/` and `features/<n>/` are the source of truth.** The Swift implementation must satisfy them.
 - **Reverse pointers are mandatory.** Every type, function, or extension that realizes a spec carries `// SPEC: <id>` in `Sources/`. Tests are tagged with the spec IDs they verify.
 - **Use `// SPEC: <id> (deviates: <reason>)` when the implementation must differ** from the spec. Use `// SPEC: manual` for genuinely internal code with no behavioral contract.
 - **The spec defines what; the test proves it; the implementation satisfies it.** None is the source of truth alone.
@@ -13,7 +13,7 @@
 
 1. Read the spec file. Confirm the ID, depends-on chain, and behavior.
 2. Read the existing patterns for similar specs (look for other `// SPEC:` annotations in the same area of `Sources/`).
-3. Write the failing tests first, tagged with the spec ID and scenario sub-IDs (Swift Testing — see `specs/CONVENTIONS.md`).
+3. Write the failing tests first, tagged with the spec ID and scenario sub-IDs (Swift Testing — see `Specs/CONVENTIONS.md`).
 4. Implement the minimum to pass the tests.
 5. Verify with `/sdd-verify` (`swift test`).
 
@@ -32,5 +32,5 @@
 
 ## Where to read more
 
-- `specs/CONVENTIONS.md` — full conventions, kind taxonomy, frontmatter schema, drift rules.
-- `specs/ARCHITECTURE.md` — layering, the pure-core / effectful-edge boundary, module layout.
+- `Specs/CONVENTIONS.md` — full conventions, kind taxonomy, frontmatter schema, drift rules.
+- `Specs/ARCHITECTURE.md` — layering, the pure-core / effectful-edge boundary, module layout.

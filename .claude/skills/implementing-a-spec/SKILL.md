@@ -93,7 +93,7 @@ If implementing multiple specs in one session, create a TodoWrite item per spec.
 Use `subagent_type: "general-purpose"` and `model: "sonnet"`. Provide:
 
 - The full spec text (don't say "read specs/foo/bar.md", paste the contents).
-- The full text of every depends-on spec, in the order you want it considered.
+- The full text of every depends-on spSpecs/ the order you want it considered.
 - The `swift-development` skill's idioms and the test-tagging convention from `specs/CONVENTIONS.md`.
 - Explicit instructions:
   1. **Write failing tests first**, with `.spec("<id>")` on the suite and `.scenario("<id>")` on each test (raw-identifier names) per `specs/CONVENTIONS.md`.

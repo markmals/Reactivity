@@ -46,7 +46,7 @@ While reproducing, you realize the spec actually _should_ speak to this — ther
 Stop the fix. "Fix in place" is wrong here, because the behavior is a contract, not an internal choice — that's a spec change.
 
 Resolution:
-
+Specs/
 1. Identify the spec(s) that should grow to cover it: a missing scenario in the relevant `story.*`, a new entry under `errors/`, a sharpened invariant in the relevant `domain.*`.
 2. Draft the amendment. Add Gherkin scenarios with stable sub-IDs per `specs/CONVENTIONS.md`.
 3. Surface to the user for approval before the spec edit lands — promotion is a deliberate act.
@@ -82,7 +82,7 @@ Before classifying as "fix in place," explicitly ask:
 
 > Is this an observable behavioral contract a caller can depend on — a value, a run count, an ordering, an error — or an internal choice the library is free to change?
 
-If it's a **contract** — callers can observe and rely on it — it belongs in the spec, not in `DEFECTS.md`. Promote. This is the same test `specs/CONVENTIONS.md` uses to decide what is and isn't a spec.
+If it's a **contract** — callers can observe and rely on it — it belongs in the spec, not in `DEFECTS.md`. Promote. This is the sameSpecs/`specs/CONVENTIONS.md` uses to decide what is and isn't a spec.
 
 If it's a genuinely **internal** choice with no observable contract, fix in place.
 

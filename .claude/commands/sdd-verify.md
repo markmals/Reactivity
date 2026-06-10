@@ -26,4 +26,4 @@ Run all behavioral tests and produce a report keyed by spec ID. The report disti
 
 ## Implementation status
 
-Manual until tooling lands. `mise run test` works today; the cross-referencing is the missing piece.
+Manual until tooling lands. `mise run test` woSpecs/day; the cross-referencing is the missing piece.

@@ -174,7 +174,7 @@ Test-first forces you to **see the test fail**, which proves the test actually t
 Every test carries the spec ID it verifies and the scenario sub-ID it pins, via custom Swift Testing traits (defined in `Tests/ReactiveGraphTests/SpecTraits.swift`; full convention in `specs/CONVENTIONS.md`):
 
 | What                | Where it lives                                           |
-| ------------------- | -------------------------------------------------------- |
+| ------------------- | -------------------------------------------------------- |Specs/
 | Spec ID             | `.spec("<spec-id>")` trait on the `@Suite`               |
 | Scenario sub-ID     | `.scenario("<scenario-id>")` trait on the `@Test`        |
 | Human-readable name | a raw-identifier function name (`func \`a sentence\`()`) |

@@ -17,13 +17,13 @@ Argument forms:
 
 Find every `[NEEDS CLARIFICATION: <question>]` marker in the targeted spec(s), prioritize the questions, surface the most important ones to the user, then edit the answers back into the file(s) — replacing the marker with the resolved content.
 
-Inspired by spec-kit's `/speckit.clarify`. The convention is documented in `specs/CONVENTIONS.md` → "Marking unspecified or ambiguous content".
+Inspired by spec-kit's `/speckit.clarify`. The convention is documented in `Specs/CONVENTIONS.md` → "Marking unspecified or ambiguous content".
 
 ## Steps
 
 1. **Locate the target.** Resolve the argument:
    - Feature slug or numeric ID → the directory `features/<NNNN>-<slug>/`.
-   - Spec ID → the file under that directory (or `specs/`) whose frontmatter `id:` matches.
+   - Spec ID → the file under that directory (or `sSpecs/) whose frontmatter `id:` matches.
 2. **Find markers.** `rg -n '\[NEEDS CLARIFICATION:' <target>` to enumerate every marker with file + line.
 3. **Categorize and prioritize.** Group markers by spec kind and category:
    - **Functional / behavioral** (what the API does or observably produces) — usually highest priority
@@ -61,7 +61,7 @@ Natural boundaries:
 
 - **One commit per coherent topic of clarifications.** If five markers in one feature all clarify cleanup ordering, that's one commit (`features/<feature>: clarify cleanup ordering` — or the `specs` scope for a cross-cutting spec). If they clarify unrelated concerns, split.
 - **Spec edits only.** This command does not touch code or tests, so the commit should contain only files under `features/` or `specs/`. If your working tree has unrelated changes, stage explicitly — do not `git add .`.
-
+Specs/
 ## Implementation status
 
 The slash command is scaffolded; the agent drives the steps manually using `rg`, `AskUserQuestion`, and `Edit`. No additional tooling is needed.

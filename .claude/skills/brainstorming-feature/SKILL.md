@@ -19,7 +19,7 @@ Help the user shape an idea into a populated feature folder. The feature folder 
 
 - Bug fixes — go straight to systematic-debugging or test-driven-development.
 - Small changes within an existing feature (one new scenario, one error catalog entry) — just edit the relevant file directly.
-- Cross-cutting architectural decisions — those belong in `specs/ARCHITECTURE.md` and aren't features.
+- Cross-cutting architectural decisions — those belong in `Specs/ARCHITECTURE.md` and aren't features.
 
 ## The hard gate
 
@@ -52,9 +52,9 @@ If the user's prompt names multiple unrelated capabilities ("items plus calendar
 
 Before asking detailed questions, read:
 
-- `specs/ARCHITECTURE.md` — for the library's layering (pure graph vs. effectful edges) and constraints
-- `specs/CONVENTIONS.md` — refresh on ID rules and `[NEEDS CLARIFICATION]` convention
-- Any existing `features/<n>/` folders that touch the same area — find related models to depend on
+- `Specs/ARCHITECTURE.md` — for the library's layering (pure graph vs. effectful edges) and constraints
+- `Specs/CONVENTIONS.md` — refresh on ID rules and `[NEEDS CLARIFICATION]` convention
+- ASpecs/sting `features/<n>/` folders that touch the same area — find related models to depend on
 
 ### 3. Question round
 

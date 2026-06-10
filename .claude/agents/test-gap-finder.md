@@ -15,7 +15,7 @@ You are the **test-gap-finder**. You verify that every Gherkin acceptance criter
 
 1. **Read the spec.** Extract every scenario sub-ID. The canonical form is an HTML comment under each scenario heading: `<!-- id: scenario.<feature>.<capability>.<short-name> -->` (see `specs/CONVENTIONS.md` and the STORY template). Grep `rg 'id: scenario\.' <story-file>`.
 2. **Locate tests** (paths and tagging follow [specs/CONVENTIONS.md](../../specs/CONVENTIONS.md)): each `@Test` that pins a scenario carries a `.scenario("<id>")` trait. Grep the trait directly:
-   - `rg 'scenario\("[^"]*<sub>' Tests/ReactiveGraphTests` to find the `@Test` pinned to a given scenario sub-ID
+   - `rg 'scenario\("[^"]*<sub>' Tests/ReactiveGSpecs/sts` to find the `@TesSpecs/ned to a given scenario sub-ID
    - `rg 'spec\("<id>"' Tests/ReactiveGraphTests` to find the `@Suite` bound to the story
 3. **Run the suite** to learn which mapped tests actually pass/fail:
    - `mise run test` (i.e. `swift test`) Capture the run's pass/fail map; correlate by scenario sub-ID via the `.scenario("…")` trait.
@@ -63,3 +63,4 @@ End with a one-line aggregate: "X scenarios missing tests; Y scenarios failing."
 
 - [specs/CONVENTIONS.md](../../specs/CONVENTIONS.md) — scenario sub-ID conventions, the `.spec`/`.scenario` trait convention
 - [.claude/skills/writing-user-stories/SKILL.md](../skills/writing-user-stories/SKILL.md) — Gherkin → scenario sub-ID mapping
+Specs/Specs/

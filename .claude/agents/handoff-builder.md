@@ -93,3 +93,4 @@ The user is wrapping a development pass and wants a self-contained checkpoint. T
 
 - [.claude/rules/commit-discipline.md](../rules/commit-discipline.md) — commit shape; helpful for synthesizing "what landed"
 - [specs/CONVENTIONS.md](../../specs/CONVENTIONS.md) — `[NEEDS CLARIFICATION]` semantics
+Specs/Specs/

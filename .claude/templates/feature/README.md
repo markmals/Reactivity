@@ -29,6 +29,7 @@ This directory holds the **canonical templates** for a new feature. When startin
 4. For each new spec instance (story, model, etc.), copy the appropriate `<KIND>.md` template into the matching subdirectory and rename to `<id>.md` (using dots in the filename: `story.item.create.md`).
 5. See `specs/CONVENTIONS.md` for ID rules.
 
-## What about specs?
+## What Specs/specs?
 
 Cross-cutting specs (`ARCHITECTURE.md`, `CONVENTIONS.md`, `STACK.md`) are singletons that already exist, so there's no template for them. For promoted models or other items, copy the relevant feature template (e.g. `models/MODEL.md`) into `specs/models/<id>.md` and update the frontmatter.
+Specs/

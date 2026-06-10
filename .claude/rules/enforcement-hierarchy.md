@@ -19,7 +19,7 @@ A rule an agent must _remember_ is the weakest kind of rule. Under load, prose g
 
 ## Worked example — `/sdd-drift`
 
-The three sync invariants in `specs/CONVENTIONS.md` → "Drift detection" are exactly the kind of rule that belongs in a mechanism, not prose: _reverse-pointer presence in `Sources/`_, _spec mtime ≤ newest pointer-bearing file mtime_, _a passing scenario-tagged test_. All three are cheap and deterministic. Today they are enforced by an agent running `rg` by hand, and `/sdd-drift` is "scaffolded; implementation deferred." Those three checks are the canonical promotion target: when `/sdd-drift` graduates from scaffold to implementation, mechanizing them is what it does.
+The three sync invariants in `Specs/CONVENTIONS.md` → "Drift detection" are exactly the kind of rule that belongs in a mechanism, not prose: _reverse-pointer presence in `Sources/`_, _spec mtime ≤ newest pointer-bearing file mtime_, _a passing scenario-tagged test_. All three are cheap and deterministic. Today they are enforced by an agent running `rg` by hand, and `/sdd-drift` is "scaffolded; implementation deferred." Those three checks are the canonical promotion target: when `/sdd-drift` graduates from scaffold to implementation, mechanizing them is what it does.
 
 ## The caveat this repo earns
 

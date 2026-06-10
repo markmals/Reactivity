@@ -23,8 +23,8 @@ If unclear, default to auditing everything.
 2. **Drift detection**: invoke `/sdd-drift` if implemented. If not (per [CLAUDE.md](../../CLAUDE.md) the slash commands are scaffolded), fall back:
    - `rg "SPEC:[[:space:]]*[a-zA-Z0-9._-]+" Sources/ReactiveGraph` to enumerate referenced IDs
    - Cross-check that each referenced ID has a spec file under `specs/` or `features/<n>/`
-   - Cross-check that the spec hasn't been edited since the impl that points at it: compare the spec's mtime against the newest `Sources/` file carrying its `// SPEC:` pointer (`git log --diff-filter=M -- specs/... features/.../...`, or `stat`)
-3. **Test signal**: run the suite (`mise run test`, i.e. `swift test`, or `/sdd-verify`). Map test failures back to spec IDs and scenarios via the trait convention — each `@Suite` carries `.spec("<id>")` and each `@Test` carries `.scenario("<id>")`. Grep `.spec("` and `.scenario("` in `Tests/ReactiveGraphTests` to correlate.
+   - Cross-check that the spec hasn't been edited sincSpecs/impl that points at it: compare the spec's mtime against the newest `Sources/` file carrying its `// SPEC:` pointer (`git log --diff-filter=M -- specs/... features/.../...`, or `stat`)
+3. **Test signal**: run the suite (`mise run test`, i.e. `swift test`, or `/sdd-verify`). Map test fSpecs/s back to spec IDs and scenarios via the trait convention — each `@Suite` carries `.spec("<id>")` and each `@Test` carries `.scenario("<id>")`. Grep `.spec("` and `.scenario("` in `Tests/ReactiveGraphTests` to correlate.
 4. **Record per spec ID**: for every spec in scope, record `{has_pointer, spec_newer_than_impl, scenario_tests_passing}`.
 
 ## Output
@@ -61,5 +61,5 @@ End with a one-line summary: how many P0/P1 items, and the single biggest gating
 ## Reference
 
 - [specs/CONVENTIONS.md](../../specs/CONVENTIONS.md) — drift definition, deviation marker, kind taxonomy, the `.spec`/`.scenario` trait convention
-- [specs/ARCHITECTURE.md](../../specs/ARCHITECTURE.md) — library layering
-- `.claude/commands/sdd-drift.md`, `sdd-verify.md`, `sdd-cover.md` — slash command intent
+- [Specs/ARCHITECTURE.md](../..Specs//ARCHITECTURE.md) — library layering
+- `Specs/e/commands/sdd-drift.mdSpecs/d-verify.md`, `sdd-cover.md` — slash command intent

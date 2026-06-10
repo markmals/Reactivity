@@ -61,7 +61,7 @@ The **scope** names what the commit touches. Scoped Commits leaves the vocabular
 | a harness area — `hooks`, `skills`, `commands`, `agents`, `templates`, `rules`, `docs`, `mise` | Changes to the repo's own machinery.                                                                                      |
 | `treewide`                                                                                     | A genuinely repo-wide sweep with no single home.                                                                          |
 
-The IDs come straight from the `id:` frontmatter in `specs/` and `features/` — list them with `grep -rhE '^id:' specs features`. Prefer the **broadest scope that still describes it**; fall back to `treewide` for a true global sweep. A ticket number, when there is one, goes in parentheses after the scope: `swift (PROJ-12): …`.
+The IDs come straight from the `id:` frontmatter in `Specs/` and `features/` — list them with `grep -rhE '^id:' specs features`. Prefer the **broadest scope that still describes it**; fall back to `treewide` for a true global sweep. A ticket number, when there is one, goes in parentheses after the scope: `swift (PROJ-12): …`.
 
 Examples:
 

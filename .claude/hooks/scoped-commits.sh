@@ -2,7 +2,7 @@
 # PreToolUse on Bash (gated by if: "Bash(git commit*)"):
 # enforce a Scoped Commits subject — `<scope>: <description>` — where <scope> is
 # a *defined* scope in this repo: a spec/feature ID (a reverse pointer to a real
-# `id:` in specs/ or features/), a harness area, a feature slug, a name listed in
+# `id:` in Specs/ or features/), a harness area, a feature slug, a name listed in
 # `.claude/commit-scopes`, or `treewide`. The set is derived from the filesystem
 # at commit time — adding a spec or a `.claude/commit-scopes` line makes that
 # scope usable with no list to edit.
@@ -61,7 +61,7 @@ esac
 #   - always: treewide, specs, and the harness areas
 #   - app/service scopes: the immediate subdirs of apps/ and services/
 #   - project scopes: non-comment lines of .claude/commit-scopes
-#   - spec/feature scopes: every frontmatter `id:` in specs/ & features/
+#   - spec/feature scopes: every frontmatter `id:` in Specs/ & features/
 allowed=$(printf '%s\n' treewide specs agents commands hooks rules skills templates docs mise readme)
 allowed+=$'\n'$({ ls -d "$root"/apps/*/ "$root"/services/*/ 2>/dev/null || true; } | sed -E 's#.*/(apps|services)/##; s#/$##')
 if [ -f "$root/.claude/commit-scopes" ]; then
@@ -88,7 +88,7 @@ is_valid_scope() {
   return 1
 }
 
-IFS=',' read -ra parts <<<"$raw_scope"
+IFS=',' read -ra parts <<<"$raw_scope"Specs/
 for p in "${parts[@]}"; do
   is_valid_scope "$p" || fail "Scope '$(printf '%s' "$p" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')' is not a defined scope. Use a spec/feature ID from specs/ or features/ (list: grep -rhE '^id:' specs features), a harness area (hooks, skills, commands, agents, templates, rules, docs, mise, readme), a name from .claude/commit-scopes (swift, package, tests, tooling), a 'features/<slug>', 'specs', or 'treewide'. See .claude/rules/commit-discipline.md."
 done

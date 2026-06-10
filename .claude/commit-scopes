@@ -1,6 +1,6 @@
 # Project-specific commit scopes for scoped-commits.sh (one per line; # = comment).
 #
-# The hook already accepts, automatically: every spec/feature `id:` in specs/ &
+# The hook already accepts, automatically: every spec/feature `id:` in Specs/ &
 # features/, each features/<slug>, the harness areas (hooks, skills, commands,
 # agents, templates, rules, docs, mise, readme), plus `specs` and `treewide`.
 # List here only the scopes that aren't derivable that way.

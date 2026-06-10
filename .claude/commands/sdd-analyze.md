@@ -26,13 +26,13 @@ A non-destructive consistency check across all spec files in `features/<NNNN>-<s
 
 - Does `NARRATIVE.md` exist and have substantive content (not just placeholder comments)?
 - Does `stories/` contain at least one story?
-- For every entity referenced in the narrative or stories, does `models/` contain a corresponding `domain.<entity>.md`? (Or is it expected to be cross-cutting in `specs/models/`?)
+- For every entity referenced in the narrative or stories, does `models/` contain a corresponding `domain.<entity>.md`? (Or is it expected to be cross-cutting in `Specs/models/`?)
 - For every behavior referenced in stories or use-cases, does the feature contain a matching `use-case.<feature>.<name>.md`?
 - For every error mentioned in stories, does `errors/` contain a matching `error.<domain>.<kind>.md`?
 
 ### 2. Reference integrity
 
-- Walk every `depends-on:` entry in every spec file's frontmatter. Does the referenced ID exist somewhere in `features/` or `specs/`?
+- Walk every `depends-on:` entry in every spec file's frontmatter. Does the referenced ID exist somewhere in `features/` or `Specs/`?
 - Walk every inline reference (e.g. "see `domain.item`") in spec body text. Does the referenced ID exist?
 
 ### 3. Story / scenario consistency
@@ -56,7 +56,7 @@ A non-destructive consistency check across all spec files in `features/<NNNN>-<s
 
 ### 6. Constitutional compliance
 
-(See `specs/CONVENTIONS.md`.)
+(See `Specs/CONVENTIONS.md`.)
 
 - Every spec file has frontmatter with `id`, `kind`.
 - ID matches filename stem (with dots).
@@ -78,7 +78,7 @@ Coverage
 
 Reference integrity
 -------------------
-❌ story.signal.create depends-on: domain.signal (NOT FOUND in features/0001 or specs/)
+❌ story.signal.create depends-on: domain.signal (NOT FOUND in features/0001Specs/ecs/)
 ✅ all other depends-on references resolve
 
 Story / scenario consistency
