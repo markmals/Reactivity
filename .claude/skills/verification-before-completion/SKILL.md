@@ -102,8 +102,8 @@ Even when the result is bad, state it cleanly:
 
 ```
 mise run test reports 2 failures:
-  - story.reactive.derivation / scenario.reactive.derivation.recompute-once — expected 1 recompute, got 2
-  - error.reactive.cycle / scenario.reactive.cycle.detected — no error thrown
+  - behavior.reactive.derivation / behavior.reactive.derivation.recompute-once — expected 1 recompute, got 2
+  - error.reactive.cycle / behavior.reactive.cycle.detected — no error thrown
 Investigating now.
 ```
 

@@ -46,9 +46,9 @@ While reproducing, you realize the spec actually _should_ speak to this — ther
 Stop the fix. "Fix in place" is wrong here, because the behavior is a contract, not an internal choice — that's a spec change.
 
 Resolution:
-Specs/
-1. Identify the spec(s) that should grow to cover it: a missing scenario in the relevant `story.*`, a new entry under `errors/`, a sharpened invariant in the relevant `domain.*`.
-2. Draft the amendment. Add Gherkin scenarios with stable sub-IDs per `specs/CONVENTIONS.md`.
+
+1. Identify the spec(s) that should grow to cover it: a missing scenario in the relevant `behavior.*`, a new entry under `errors/`, a sharpened invariant in the relevant `domain.*`.
+2. Draft the amendment. Add Gherkin scenarios with stable sub-IDs per `Specs/CONVENTIONS.md`.
 3. Surface to the user for approval before the spec edit lands — promotion is a deliberate act.
 4. Once approved, commit the spec change (`specs: …` or the spec-id scope).
 5. Run `/sdd-apply <spec-id>` to land the implementation + tests, mediated by the spec.
@@ -82,7 +82,7 @@ Before classifying as "fix in place," explicitly ask:
 
 > Is this an observable behavioral contract a caller can depend on — a value, a run count, an ordering, an error — or an internal choice the library is free to change?
 
-If it's a **contract** — callers can observe and rely on it — it belongs in the spec, not in `DEFECTS.md`. Promote. This is the sameSpecs/`specs/CONVENTIONS.md` uses to decide what is and isn't a spec.
+If it's a **contract** — callers can observe and rely on it — it belongs in the spec, not in `DEFECTS.md`. Promote. This is the same way `Specs/CONVENTIONS.md` uses to decide what is and isn't a spec.
 
 If it's a genuinely **internal** choice with no observable contract, fix in place.
 
@@ -114,6 +114,6 @@ Entries should leave `DEFECTS.md` faster than they enter. The file is a drain, n
 ## Related skills
 
 - `systematic-debugging` — the four-phase discipline for reproducing and root-causing each entry before classifying.
-- `brainstorming-feature` — for the promote-to-spec path when the amendment is large enough to warrant spec-style exploration (a new story). Smaller amendments (a scenario, an error entry) can be edited directly.
+- `brainstorming-feature` — for the promote-to-spec path when the amendment is large enough to warrant spec-style exploration (a new behavior). Smaller amendments (a scenario, an error entry) can be edited directly.
 - `verification-before-completion` — the gate before claiming an entry is fixed. Run `mise run test`; read its output; only then delete the entry.
 - `implementing-a-spec` — the workflow `/sdd-apply` uses to land a promoted spec change.

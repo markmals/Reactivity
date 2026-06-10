@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Use when writing any production code in this repo — features, bug fixes, refactors, behavior changes. Write the failing test first, watch it fail, write minimal code to pass, refactor green. Tests carry the spec ID and scenario sub-ID via `.spec(...)` / `.scenario(...)` traits per specs/CONVENTIONS.md.
+description: Use when writing any production code in this repo — features, bug fixes, refactors, behavior changes. Write the failing test first, watch it fail, write minimal code to pass, refactor green. Tests carry the spec ID and scenario sub-ID via `.spec(...)` / `.scenario(...)` traits per Specs/CONVENTIONS.md.
 ---
 
 # Test-Driven Development
@@ -50,7 +50,7 @@ If you're thinking "skip TDD just this once" — stop. That's rationalization.
 ### RED — write one failing test
 
 - One behavior per test.
-- Clear name: a raw-identifier sentence describing the behavior; the spec/scenario IDs ride on `.spec(...)` / `.scenario(...)` traits (see `specs/CONVENTIONS.md`).
+- Clear name: a raw-identifier sentence describing the behavior; the spec/scenario IDs ride on `.spec(...)` / `.scenario(...)` traits (see `Specs/CONVENTIONS.md`).
 - Test the public API; assert on observable outcomes (values, run counts, ordering). The graph is pure — no mocks or runtime needed.
 - **Example or invariant?** A specific scenario ("a derived value recomputes once when its source changes") is an example test. A universally-quantified rule from a `domain.<entity>` spec — "writing an equal value never recomputes", "for all read orders the final value is the same" — is a **property**, and the failing test you write first is a property test. See "Invariants get a property, not just examples" below. Don't settle for examples when the spec said "for all".
 
@@ -59,9 +59,9 @@ import Testing
 
 @testable import ReactiveGraph
 
-@Suite(.spec("story.reactive.derivation"))
+@Suite(.spec("behavior.reactive.derivation"))
 struct Derivation {
-    @Test(.scenario("scenario.reactive.derivation.recompute-once"))
+    @Test(.scenario("behavior.reactive.derivation.recompute-once"))
     func `a derived value recomputes once when its source changes`() {
         withReactiveScope {
             var runs = 0
@@ -128,7 +128,7 @@ struct EqualityGating {
     // A curated parameter set stands in for a property; reach for SwiftCheck when
     // you need randomized generation.
     @Test(
-        .scenario("scenario.reactive.derivation.no-recompute-on-equal-write"),
+        .scenario("behavior.reactive.derivation.no-recompute-on-equal-write"),
         arguments: [0, 1, -1, Int.max, Int.min]
     )
     func `writing an equal value never recomputes a dependent`(value: Int) {
@@ -171,10 +171,10 @@ Test-first forces you to **see the test fail**, which proves the test actually t
 
 ## Tagging discipline
 
-Every test carries the spec ID it verifies and the scenario sub-ID it pins, via custom Swift Testing traits (defined in `Tests/ReactiveGraphTests/SpecTraits.swift`; full convention in `specs/CONVENTIONS.md`):
+Every test carries the spec ID it verifies and the scenario sub-ID it pins, via custom Swift Testing traits (defined in `Tests/ReactiveGraphTests/SpecTraits.swift`; full convention in `Specs/CONVENTIONS.md`):
 
 | What                | Where it lives                                           |
-| ------------------- | -------------------------------------------------------- |Specs/
+| ------------------- | -------------------------------------------------------- |
 | Spec ID             | `.spec("<spec-id>")` trait on the `@Suite`               |
 | Scenario sub-ID     | `.scenario("<scenario-id>")` trait on the `@Test`        |
 | Human-readable name | a raw-identifier function name (`func \`a sentence\`()`) |

@@ -36,7 +36,7 @@ Prefer `struct`/`enum` with value semantics. The reactive graph has genuine shar
 
 - Annotate isolation deliberately. If a type is `@MainActor`, that's a contract callers depend on — capture it in the spec, don't add it reflexively to silence a warning.
 - `Sendable` conformances are promises. Don't reach for `@unchecked Sendable` to make a warning go away; if you must, justify it in a comment naming the invariant that makes it safe.
-- The "currently-tracking observer" ambient context (see `specs/ARCHITECTURE.md` → Concurrency model) is the load-bearing isolation decision. Treat changes to it as behavior changes: spec first.
+- The "currently-tracking observer" ambient context (see `Specs/ARCHITECTURE.md` → Concurrency model) is the load-bearing isolation decision. Treat changes to it as behavior changes: spec first.
 
 ### async/await for anything that suspends; no completion handlers
 
@@ -55,10 +55,10 @@ import Testing
 
 @testable import ReactiveGraph
 
-@Suite(.spec("story.reactive.derivation"))
+@Suite(.spec("behavior.reactive.derivation"))
 struct Derivation {
 
-    @Test(.scenario("scenario.reactive.derivation.recompute-once"))
+    @Test(.scenario("behavior.reactive.derivation.recompute-once"))
     func `a derived value recomputes once when its source changes`() {
         withReactiveScope {
             var runs = 0
@@ -75,7 +75,7 @@ struct Derivation {
 }
 ```
 
-- The spec/scenario IDs ride on `.spec(...)` / `.scenario(...)` traits (defined in `Tests/ReactiveGraphTests/SpecTraits.swift`); the test name is a raw identifier that reads like a sentence. Drift tooling greps the trait args. See `specs/CONVENTIONS.md`.
+- The spec/scenario IDs ride on `.spec(...)` / `.scenario(...)` traits (defined in `Tests/ReactiveGraphTests/SpecTraits.swift`); the test name is a raw identifier that reads like a sentence. Drift tooling greps the trait args. See `Specs/CONVENTIONS.md`.
 - Invariants ("for all") get a parameterized `@Test(arguments:)` or a generated-input property test, not just one example — see `test-driven-development`.
 - Run counts and ordering are the soul of a reactive library's tests: a behavior that produces the right value but recomputes twice is a bug a value-only assertion misses.
 

@@ -79,7 +79,7 @@ When all specs done:
 
 - The spec file. Read it in full.
 - Every spec in its `depends-on` chain. Skim, but read the field names and invariants.
-- The `swift-development` skill for idioms, and `specs/CONVENTIONS.md` for the test-tagging convention.
+- The `swift-development` skill for idioms, and `Specs/CONVENTIONS.md` for the test-tagging convention.
 - Existing patterns near where the new code will live in `Sources/ReactiveGraph/` (look for other `// SPEC:` annotations in the same area).
 
 The implementer should not need to read any of this — you're providing the curated context.
@@ -92,11 +92,11 @@ If implementing multiple specs in one session, create a TodoWrite item per spec.
 
 Use `subagent_type: "general-purpose"` and `model: "sonnet"`. Provide:
 
-- The full spec text (don't say "read specs/foo/bar.md", paste the contents).
-- The full text of every depends-on spSpecs/ the order you want it considered.
-- The `swift-development` skill's idioms and the test-tagging convention from `specs/CONVENTIONS.md`.
+- The full spec text (don't say "read Specs/foo/bar.md", paste the contents).
+- The full text of every depends-on spec in the order you want it considered.
+- The `swift-development` skill's idioms and the test-tagging convention from `Specs/CONVENTIONS.md`.
 - Explicit instructions:
-  1. **Write failing tests first**, with `.spec("<id>")` on the suite and `.scenario("<id>")` on each test (raw-identifier names) per `specs/CONVENTIONS.md`.
+  1. **Write failing tests first**, with `.spec("<id>")` on the suite and `.scenario("<id>")` on each test (raw-identifier names) per `Specs/CONVENTIONS.md`.
   2. Run the tests to **confirm they fail** for the right reason.
   3. Implement the **minimum code** to make the tests pass.
   4. **Attach `// SPEC: <id>`** to the implementing class/function/module.

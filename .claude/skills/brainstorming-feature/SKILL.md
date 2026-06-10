@@ -1,11 +1,11 @@
 ---
 name: brainstorming-feature
-description: Use before starting any new feature or substantial change to an existing one. Walks the user through narrative → stories → models → errors, populating a feature folder. Lifts patterns from superpowers' brainstorming skill but is tuned to our features-vs-specs structure and our `[NEEDS CLARIFICATION]` convention.
+description: Use before starting any new feature or substantial change to an existing one. Walks the user through narrative → behaviors → models → errors, populating a feature folder. Lifts patterns from superpowers' brainstorming skill but is tuned to our features-vs-specs structure and our `[NEEDS CLARIFICATION]` convention.
 ---
 
 # Brainstorming a Feature
 
-Help the user shape an idea into a populated feature folder. The feature folder _is_ the spec; there is no separate plan document. By the end of this skill, `features/<NNNN>-<slug>/` should contain a NARRATIVE plus enough stories, models, and errors to drive `/sdd-apply <id>` against the Swift library.
+Help the user shape an idea into a populated feature folder. The feature folder _is_ the spec; there is no separate plan document. By the end of this skill, `Features/<NNNN>-<slug>/` should contain a NARRATIVE plus enough behaviors, models, and errors to drive `/sdd-apply <id>` against the Swift library.
 
 **Default workspace:** the user's current branch (typically `main`). Do not prompt for a worktree, branch, or isolation. If the user explicitly requests an isolated workspace, that's a separate skill and a separate decision.
 
@@ -26,7 +26,7 @@ Help the user shape an idea into a populated feature folder. The feature folder 
 Do **not** invoke `/sdd-apply` or write any implementation code until the feature folder has at least:
 
 - a `NARRATIVE.md` with substantive content
-- one or more `stories/<id>.md` with Gherkin scenarios
+- one or more `behaviors/<id>.md` with Gherkin scenarios
 - the user has explicitly approved the spec content
 
 Skipping this gate produces specs that look complete but contain hidden assumptions. Implementation built on those assumptions has to be reworked.
@@ -38,7 +38,7 @@ Skipping this gate produces specs that look complete but contain hidden assumpti
 2. Explore context   — read existing specs, architecture, related features
 3. Question round    — one at a time, multiple-choice when possible
 4. Approach round    — propose 2-3 approaches with tradeoffs, recommend one
-5. Author the folder — write NARRATIVE first, then stories, then models/errors
+5. Author the folder — write NARRATIVE first, then behaviors, then models/errors
 6. Self-review       — scan for placeholders, contradictions, scope creep, [NEEDS CLARIFICATION] count
 7. User review gate  — user reviews the populated folder; iterate until approved
 8. Hand-off          — point user at /sdd-analyze and /sdd-apply
@@ -54,7 +54,7 @@ Before asking detailed questions, read:
 
 - `Specs/ARCHITECTURE.md` — for the library's layering (pure graph vs. effectful edges) and constraints
 - `Specs/CONVENTIONS.md` — refresh on ID rules and `[NEEDS CLARIFICATION]` convention
-- ASpecs/sting `features/<n>/` folders that touch the same area — find related models to depend on
+- Existing `Features/<n>/` folders that touch the same area — find related models to depend on
 
 ### 3. Question round
 
@@ -83,10 +83,10 @@ Get explicit approval on the approach before writing files.
 
 ### 5. Author the folder
 
-Create `features/<NNNN>-<slug>/` if it doesn't exist (next number, kebab-case slug). Copy templates from `.claude/templates/feature/`:
+Create `Features/<NNNN>-<slug>/` if it doesn't exist (next number, kebab-case slug). Copy templates from `.claude/templates/feature/`:
 
 - **`NARRATIVE.md`** — fill in persona, situation, what we're building, why it matters, what it is not. Optionally fill the Success Criteria section.
-- **`stories/<id>.md`** — one file per behavioral story. Use the `writing-user-stories` skill. IDs follow `story.<feature>.<capability>`. Include the Independent Test line. Each scenario gets a sub-ID `scenario.<feature>.<capability>.<short-name>`.
+- **`behaviors/<id>.md`** — one file per behavior. Use the `writing-behaviors` skill. IDs follow `behavior.<feature>.<capability>`. Include the Independent Test line. Each scenario gets a sub-ID `behavior.<feature>.<capability>.<short-name>`.
 - **`models/<id>.md`** — one file per domain model (a reactive primitive or value type). ID prefix `domain.`. State the shape, semantics, and invariants.
 - **`errors/<id>.md`** — one per observable failure mode (e.g. a dependency cycle). ID prefix `error.`.
 
@@ -97,8 +97,8 @@ Mark every unspecified detail with `[NEEDS CLARIFICATION: <question>]` rather th
 After authoring, do a quick pass for:
 
 - **Placeholders**: `<id>`, `<feature-slug>`, TODO, TBD — replaced or marked.
-- **Contradictions**: does NARRATIVE align with STORIES? Do stories reference models that exist?
-- **Scope creep**: did stories accumulate scenarios that belong in a different feature?
+- **Contradictions**: does NARRATIVE align with BEHAVIORS? Do behaviors reference models that exist?
+- **Scope creep**: did behaviors accumulate scenarios that belong in a different feature?
 - **Ambiguity**: any sentence that could be interpreted two ways?
 - **Clarification count**: how many `[NEEDS CLARIFICATION]` markers remain? Note the count for the handoff.
 
@@ -109,9 +109,9 @@ Fix issues inline. No need to re-review.
 Tell the user the feature folder is ready and list what was authored:
 
 ```
-Feature folder authored: features/<NNNN>-<slug>/
+Feature folder authored: Features/<NNNN>-<slug>/
 - NARRATIVE.md
-- stories/ (N stories, M scenarios)
+- behaviors/ (N behaviors, M scenarios)
 - models/ (N domain models)
 - errors/ (N error catalog entries)
 
@@ -125,7 +125,7 @@ Wait for user feedback. If they request changes, make them and re-run the self-r
 Once approved, point the user at the next steps:
 
 - **If clarifications remain:** `/sdd-clarify <slug>` to resolve them.
-- **Otherwise:** `/sdd-analyze <slug>` to verify cross-artifact consistency, then `/sdd-apply <story-id-or-domain-id>` to implement against the spec. Use the `implementing-a-spec` skill from there.
+- **Otherwise:** `/sdd-analyze <slug>` to verify cross-artifact consistency, then `/sdd-apply <behavior-id-or-domain-id>` to implement against the spec. Use the `implementing-a-spec` skill from there.
 
 ### 9. Commit
 
@@ -133,8 +133,8 @@ After the user approves the feature folder, commit the spec content. See `.claud
 
 Natural boundaries:
 
-- **One commit for the feature scaffold** when the folder is small enough to read as a single unit: `features/<NNNN>-<slug>: scaffold feature`. Body lists what's inside (N stories, M domain models, etc.).
-- **Split by artifact kind** when the folder is large: a NARRATIVE+stories commit, then domain models, then errors. Each commit should leave the feature folder in an internally consistent state.
+- **One commit for the feature scaffold** when the folder is small enough to read as a single unit: `features/<NNNN>-<slug>: scaffold feature`. Body lists what's inside (N behaviors, M domain models, etc.).
+- **Split by artifact kind** when the folder is large: a NARRATIVE+behaviors commit, then domain models, then errors. Each commit should leave the feature folder in an internally consistent state.
 
 Use the `features/<slug>` scope (a valid Scoped Commit scope — see `.claude/rules/commit-discipline.md`) for everything authored by this skill. Do not include implementation code in the same commit — that's a separate step driven by `/sdd-apply`.
 
@@ -144,20 +144,20 @@ Use the `features/<slug>` scope (a valid Scoped Commit scope — see `.claude/ru
 - **Multiple-choice when possible.** Easier to answer than open-ended.
 - **YAGNI ruthlessly.** Don't add scenarios, fields, or errors that aren't necessary for the user-observable capability.
 - **Mark, don't guess.** `[NEEDS CLARIFICATION: <question>]` is the honest answer when the user hasn't specified.
-- **Specify behavior, not internals.** A story pins observable behavior (values, run counts, ordering, errors), never a particular Swift type name or graph layout — those are the implementation's to choose.
+- **Specify behavior, not internals.** A behavior pins observable behavior (values, run counts, ordering, errors), never a particular Swift type name or graph layout — those are the implementation's to choose.
 
 ## Red flags — stop and re-scope
 
 | Symptom                                                         | What it means                                                     |
 | --------------------------------------------------------------- | ----------------------------------------------------------------- |
-| More than ~6 stories per feature                                | Feature too large; decompose.                                     |
-| A story has more than ~6 scenarios                              | Story too large; split into multiple stories.                     |
+| More than ~6 behaviors per feature                              | Feature too large; decompose.                                     |
+| A behavior has more than ~6 scenarios                           | Behavior too large; split into multiple behaviors.                |
 | Many domain models that don't share an aggregate root           | Two features bundled as one; decompose.                           |
-| Story scenarios reference internal types or graph layout        | Implementation creep in a spec; rewrite from observable behavior. |
+| Behavior scenarios reference internal types or graph layout     | Implementation creep in a spec; rewrite from observable behavior. |
 | `[NEEDS CLARIFICATION]` count > 10 after one round of questions | The idea isn't clear enough yet; loop back to the question round. |
 
 ## Anti-patterns
 
-- **No design before code.** Every feature goes through this skill, even small ones. The skill itself can be short for small features (a few questions, two stories, one model) — but it must be invoked.
+- **No design before code.** Every feature goes through this skill, even small ones. The skill itself can be short for small features (a few questions, two behaviors, one model) — but it must be invoked.
 - **Branching ceremony.** No "create a branch first" steps. Default workspace is `main`.
 - **Plan documents.** We don't have plan.md / tasks.md. The feature folder _is_ the plan.
